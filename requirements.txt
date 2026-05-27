@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 fastapi
 uvicorn
 sqlalchemy
 pydantic
 pydantic-settings
+=======
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+pydantic-settings
+>>>>>>> 2125433e0912d6cb44fb749a70ec84e188f71f87
 psycopg2-binary
