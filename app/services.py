@@ -200,3 +200,32 @@ def get_user_ride_history(user_id):
     finally:
         cursor.close()
         conn.close()
+
+from sqlalchemy.orm import Session
+# Adjust this import to match wherever your Booking model class is defined inside app
+from database.bookings import Bookings 
+
+from config.database import get_db_connection
+
+def get_ride_history_by_passenger(passenger_id: int):
+    """
+    Fetches past ride rows from PostgreSQL using raw psycopg2 queries.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # Replace 'bookings' and 'passenger_id' with your exact SQL column names if different
+        query = "SELECT * FROM bookings WHERE passenger_id = %s ORDER BY id DESC;"
+        cursor.execute(query, (passenger_id,))
+        
+        # This grabs all columns dynamically
+        columns = [desc[0] for desc in cursor.description]
+        trips = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        
+        return trips
+    except Exception as e:
+        print(f"Database error: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
