@@ -1,0 +1,29 @@
+# === Python / FastAPI Backend Ignores ===
+
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+venv/
+
+
+# === Database & Local Secrets ===
+*.log
+.database_secret*
+
+# === OS & System Garbage Files ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python virtual environment
+env/
+__pycache__/
+app/__pycache__/
+config/__pycache__/
+database/__pycache__/
+
+# Environment secrets
+.env

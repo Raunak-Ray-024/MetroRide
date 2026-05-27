@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MetroRide — Urban Mobility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F4F2EE;
+    --bg-card: #FAFAF7;
+    --bg-surface: #FFFFFF;
+    --text-primary: #1C1B18;
+    --text-secondary: #6B6860;
+    --text-muted: #A09D96;
+    --accent: #2E5C4F;
+    --accent-light: #E1F0EB;
+    --accent-mid: #3D7A69;
+    --accent-pale: #F0F7F5;
+    --amber: #C47F2A;
+    --amber-light: #FDF3E3;
+    --border: rgba(28,27,24,0.10);
+    --border-med: rgba(28,27,24,0.16);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.05);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 26px;
+    --font: 'DM Sans', sans-serif;
+    --font-serif: 'DM Serif Display', serif;
+    --sidebar-w: 260px;
+    --header-h: 64px;
+    --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 100;
+    transition: transform var(--transition);
+  }
+  .sidebar-logo {
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px;
+  }
+  .logo-text { font-family: var(--font-serif); font-size: 20px; color: var(--text-primary); letter-spacing: -0.3px; }
+  .logo-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-top: 1px; letter-spacing: 0.8px; text-transform: uppercase; }
+
+  .sidebar-nav { padding: 16px 12px; flex: 1; }
+  .nav-section-label {
+    font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 1.2px;
+    text-transform: uppercase; padding: 10px 12px 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 14px; font-weight: 400;
+    color: var(--text-secondary); transition: all var(--transition);
+    position: relative; margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text-primary); }
+  .nav-item.active {
+    background: var(--accent-pale); color: var(--accent);
+    border-color: rgba(46,92,79,0.12); font-weight: 500;
+  }
+  .nav-item .ti { font-size: 17px; }
+  .nav-badge {
+    margin-left: auto; font-size: 11px; font-weight: 600;
+    background: var(--accent); color: #fff;
+    padding: 1px 7px; border-radius: 20px; min-width: 20px; text-align: center;
+  }
+  .nav-badge.amber { background: var(--amber); }
+
+  .sidebar-footer {
+    padding: 16px 12px; border-top: 1px solid var(--border);
+  }
+  .profile-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius-sm);
+    cursor: pointer; transition: background var(--transition);
+  }
+  .profile-chip:hover { background: var(--bg); }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-light), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: var(--bg-surface); flex-shrink: 0;
+  }
+  .profile-info .name { font-size: 13px; font-weight: 500; }
+  .profile-info .role { font-size: 11px; color: var(--text-muted); }
+
+  /* ── Main ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    height: var(--header-h);
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 32px; gap: 16px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-title { font-size: 17px; font-weight: 500; flex: 1; }
+  .topbar-title span { font-family: var(--font-serif); font-style: italic; color: var(--accent); font-size: 18px; }
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 8px 14px;
+    width: 220px; transition: border-color var(--transition);
+  }
+  .search-bar:focus-within { border-color: var(--accent); }
+  .search-bar input {
+    border: none; outline: none; background: transparent;
+    font-family: var(--font); font-size: 13px; color: var(--text-primary); width: 100%;
+  }
+  .search-bar input::placeholder { color: var(--text-muted); }
+  .search-bar .ti { font-size: 15px; color: var(--text-muted); }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--bg-surface);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text-secondary); font-size: 16px;
+    transition: all var(--transition); position: relative;
+  }
+  .icon-btn:hover { border-color: var(--border-med); color: var(--text-primary); background: var(--bg); }
+  .notif-dot {
+    width: 7px; height: 7px; background: var(--accent);
+    border-radius: 50%; position: absolute; top: 6px; right: 6px;
+    border: 1.5px solid var(--bg-card);
+  }
+  .btn-primary {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    padding: 8px 16px; font-family: var(--font); font-size: 13px;
+    font-weight: 500; cursor: pointer; transition: all var(--transition);
+    white-space: nowrap;
+  }
+  .btn-primary:hover { background: var(--accent-mid); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(46,92,79,0.25); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ── Page Content ── */
+  .page { display: none; padding: 28px 32px; flex: 1; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Stats Grid ── */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px 22px;
+    transition: all var(--transition); cursor: default; position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--accent); opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .stat-card:hover::before { opacity: 1; }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .stat-icon-wrap {
+    width: 38px; height: 38px; border-radius: var(--radius-sm);
+    background: var(--accent-pale); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .stat-icon-wrap.amber { background: var(--amber-light); color: var(--amber); }
+  .stat-icon-wrap.muted { background: var(--bg); color: var(--text-secondary); }
+  .stat-change {
+    font-size: 11px; font-weight: 500; padding: 3px 8px;
+    border-radius: 20px; display: flex; align-items: center; gap: 3px;
+  }
+  .stat-change.up { background: #EAF4EE; color: #2B7A4B; }
+  .stat-change.down { background: #FEF2F2; color: #C13333; }
+  .stat-val { font-size: 26px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.5px; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 3px; font-weight: 400; }
+
+  /* ── Content Grid ── */
+  .content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+  .card {
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 22px 14px; border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .card-title .ti { font-size: 16px; color: var(--accent); }
+  .card-action {
+    font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500;
+    display: flex; align-items: center; gap: 4px; transition: gap var(--transition);
+  }
+  .card-action:hover { gap: 7px; }
+
+  /* ── Rides Table ── */
+  .rides-table { width: 100%; border-collapse: collapse; }
+  .rides-table th {
+    text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    padding: 10px 22px; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .rides-table td { padding: 13px 22px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .rides-table tr:last-child td { border-bottom: none; }
+  .rides-table tr:hover td { background: var(--bg); }
+  .route-cell { display: flex; flex-direction: column; gap: 2px; }
+  .route-from { font-weight: 500; font-size: 13px; }
+  .route-to { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+  .route-arrow { color: var(--accent); font-size: 11px; }
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px;
+  }
+  .status-pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.7; }
+  .status-pill.completed { background: #EAF4EE; color: #2B7A4B; }
+  .status-pill.ongoing { background: #EFF6FF; color: #1D5FA8; }
+  .status-pill.pending { background: var(--amber-light); color: #995E12; }
+  .status-pill.cancelled { background: #FEF2F2; color: #C13333; }
+  .driver-cell { display: flex; align-items: center; gap: 8px; }
+  .mini-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-pale); color: var(--accent);
+    font-size: 10px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .fare-cell { font-weight: 500; color: var(--text-primary); }
+  .fare-cell small { display: block; font-size: 10px; font-weight: 400; color: var(--text-muted); }
+
+  /* ── Activity Feed ── */
+  .activity-list { padding: 8px 0; }
+  .activity-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 20px; border-bottom: 1px solid var(--border);
+    transition: background var(--transition);
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-item:hover { background: var(--bg); }
+  .act-icon-wrap {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 15px; margin-top: 1px;
+  }
+  .act-icon-wrap.green { background: #EAF4EE; color: #2B7A4B; }
+  .act-icon-wrap.blue { background: #EFF6FF; color: #1D5FA8; }
+  .act-icon-wrap.amber { background: var(--amber-light); color: var(--amber); }
+  .act-icon-wrap.red { background: #FEF2F2; color: #C13333; }
+  .act-body { flex: 1; }
+  .act-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .act-detail { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .act-time { font-size: 11px; color: var(--text-muted); white-space: nowrap; margin-top: 3px; }
+
+  /* ── Map placeholder ── */
+  .map-area {
+    position: relative; height: 220px; background: #E8EDE8;
+    overflow: hidden;
+  }
+  .map-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(46,92,79,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(46,92,79,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .map-road-h {
+    position: absolute; background: rgba(255,255,255,0.7);
+    left: 0; right: 0;
+  }
+  .map-road-v {
+    position: absolute; background: rgba(255,255,255,0.7);
+    top: 0; bottom: 0;
+  }
+  .map-pin {
+    position: absolute; display: flex; flex-direction: column; align-items: center;
+    transform: translateX(-50%);
+  }
+  .map-pin-dot {
+    width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .map-pin-dot.green { background: var(--accent); }
+  .map-pin-dot.amber { background: var(--amber); }
+  .map-pin-dot.blue { background: #2563EB; }
+  .map-pin-label {
+    font-size: 9px; font-weight: 600; background: #fff; color: var(--text-primary);
+    padding: 2px 6px; border-radius: 4px; margin-top: 3px; white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+  .map-car {
+    position: absolute; font-size: 18px; transform: translate(-50%, -50%);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    transition: all 2s linear;
+  }
+  .map-overlay {
+    position: absolute; bottom: 10px; left: 10px; right: 10px;
+    display: flex; gap: 8px;
+  }
+  .map-chip {
+    background: rgba(255,255,255,0.92); border-radius: 8px;
+    padding: 6px 10px; font-size: 11px; font-weight: 500; color: var(--text-primary);
+    display: flex; align-items: center; gap: 5px;
+    box-shadow: var(--shadow-sm);
+  }
+  .map-chip .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .map-chip .dot.green { background: var(--accent); }
+  .map-chip .dot.amber { background: var(--amber); }
+
+  /* ── Form styles ── */
+  .form-section { padding: 22px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+  .form-input {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 9px 12px;
+    font-family: var(--font); font-size: 13px; color: var(--text-primary);
+    outline: none; transition: border-color var(--transition), box-shadow var(--transition);
+    width: 100%;
+  }
+  .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(46,92,79,0.10); background: var(--bg-surface); }
+  .form-input::placeholder { color: var(--text-muted); }
+  select.form-input { cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A09D96' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .form-actions { display: flex; gap: 10px; margin-top: 6px; padding: 0 22px 22px; }
+  .btn-outline {
+    display: flex; align-items: center; gap: 7px;
+    background: transparent; color: var(--text-secondary);
+    border: 1px solid var(--border-med); border-radius: var(--radius-sm);
+    padding: 8px 16px; font-family: var(--font); font-size: 13px;
+    font-weight: 400; cursor: pointer; transition: all var(--transition);
+  }
+  .btn-outline:hover { background: var(--bg); color: var(--text-primary); border-color: var(--accent); }
+
+  /* ── Toast ── */
+  .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--text-primary); color: #fff;
+    padding: 12px 16px; border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 400; min-width: 260px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+  }
+  .toast .ti { font-size: 16px; color: #7EE8A2; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── Drivers Grid ── */
+  .drivers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 22px; }
+  .driver-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 18px 16px; transition: all var(--transition);
+  }
+  .driver-card:hover { background: var(--bg-surface); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+  .driver-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .driver-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent-pale); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 600; flex-shrink: 0;
+  }
+  .driver-name { font-size: 14px; font-weight: 600; }
+  .driver-vehicle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .driver-status { margin-left: auto; }
+  .driver-meta { display: flex; flex-direction: column; gap: 6px; }
+  .driver-meta-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+  .driver-meta-row .ti { font-size: 13px; color: var(--text-muted); }
+  .driver-rating { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--amber); }
+
+  /* ── Users page ── */
+  .users-list { padding: 0; }
+  .user-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 22px; border-bottom: 1px solid var(--border);
+    transition: background var(--transition); cursor: pointer;
+  }
+  .user-row:last-child { border-bottom: none; }
+  .user-row:hover { background: var(--bg); }
+  .user-big-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent-pale); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600; flex-shrink: 0;
+  }
+  .user-info { flex: 1; }
+  .user-name { font-size: 14px; font-weight: 500; }
+  .user-email { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .user-meta { display: flex; align-items: center; gap: 12px; }
+  .user-rides { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+  .user-spent { font-size: 13px; font-weight: 600; color: var(--accent); }
+
+  /* ── Section header ── */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .section-title { font-family: var(--font-serif); font-size: 22px; color: var(--text-primary); letter-spacing: -0.3px; }
+  .section-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .filters { display: flex; gap: 8px; }
+  .filter-btn {
+    font-size: 12px; padding: 6px 12px; border-radius: 20px;
+    border: 1px solid var(--border); background: var(--bg-surface);
+    color: var(--text-secondary); cursor: pointer; transition: all var(--transition);
+    font-family: var(--font); font-weight: 400;
+  }
+  .filter-btn.active, .filter-btn:hover { background: var(--accent-pale); color: var(--accent); border-color: rgba(46,92,79,0.2); }
+
+  /* ── Responsive ── */
+  @media (max-width: 1100px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+    .drivers-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 780px) {
+    :root { --sidebar-w: 0px; }
+    .sidebar { transform: translateX(-260px); }
+    .sidebar.open { transform: translateX(0); width: 260px; }
+    .main { margin-left: 0; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .topbar { padding: 0 16px; }
+    .page { padding: 20px 16px; }
+  }
+
+  /* ── Loading pulse ── */
+  .pulse { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-med); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon"><i class="ti ti-subway"></i></div>
+      <div>
+        <div class="logo-text">MetroRide</div>
+        <div class="logo-sub">Admin Portal</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="navigate('dashboard', this)">
+      <i class="ti ti-layout-dashboard"></i> Dashboard
+    </div>
+    <div class="nav-item" onclick="navigate('rides', this)">
+      <i class="ti ti-route"></i> Active Rides
+      <span class="nav-badge">4</span>
+    </div>
+
+    <div class="nav-section-label" style="margin-top:8px;">Management</div>
+    <div class="nav-item" onclick="navigate('book', this)">
+      <i class="ti ti-circle-plus"></i> Book a Ride
+    </div>
+    <div class="nav-item" onclick="navigate('drivers', this)">
+      <i class="ti ti-steering-wheel"></i> Drivers
+      <span class="nav-badge amber">2</span>
+    </div>
+    <div class="nav-item" onclick="navigate('users', this)">
+      <i class="ti ti-users"></i> Passengers
+    </div>
+    <div class="nav-item" onclick="navigate('history', this)">
+      <i class="ti ti-history"></i> Ride History
+    </div>
+
+    <div class="nav-section-label" style="margin-top:8px;">System</div>
+    <div class="nav-item" onclick="navigate('register', this)">
+      <i class="ti ti-user-plus"></i> Register Driver
+    </div>
+    <div class="nav-item" onclick="navigate('newuser', this)">
+      <i class="ti ti-person-add"></i> Add Passenger
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="profile-chip">
+      <div class="avatar">AD</div>
+      <div class="profile-info">
+        <div class="name">Admin User</div>
+        <div class="role">Super Admin</div>
+      </div>
+      <i class="ti ti-dots-vertical" style="margin-left:auto;font-size:15px;color:var(--text-muted)"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="icon-btn" id="menu-btn" onclick="toggleSidebar()" style="display:none" aria-label="Toggle menu">
+      <i class="ti ti-menu-2"></i>
+    </div>
+    <div class="topbar-title" id="page-title"><span>Dashboard</span> Overview</div>
+    <div class="search-bar">
+      <i class="ti ti-search"></i>
+      <input type="text" placeholder="Search rides, drivers..." />
+    </div>
+    <div class="icon-btn" aria-label="Notifications">
+      <i class="ti ti-bell"></i>
+      <div class="notif-dot"></div>
+    </div>
+    <div class="icon-btn" aria-label="Settings">
+      <i class="ti ti-settings"></i>
+    </div>
+    <button class="btn-primary" onclick="navigate('book',document.querySelector('[onclick*=book]'))">
+      <i class="ti ti-plus"></i> New Ride
+    </button>
+  </header>
+
+  <!-- ── DASHBOARD PAGE ── -->
+  <div class="page active" id="page-dashboard">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Good morning ✦</div>
+        <div class="section-subtitle">Here's what's happening with MetroRide today.</div>
+      </div>
+      <div class="filters">
+        <button class="filter-btn active">Today</button>
+        <button class="filter-btn">This Week</button>
+        <button class="filter-btn">Month</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon-wrap"><i class="ti ti-route"></i></div>
+          <div class="stat-change up"><i class="ti ti-trending-up" style="font-size:10px"></i>+12%</div>
+        </div>
+        <div class="stat-val">142</div>
+        <div class="stat-label">Total Rides Today</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-header">
+          <div class="stat-icon-wrap amber"><i class="ti ti-cash"></i></div>
+          <div class="stat-change up"><i class="ti ti-trending-up" style="font-size:10px"></i>+8%</div>
+        </div>
+        <div class="stat-val">₹18,420</div>
+        <div class="stat-label">Revenue Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon-wrap"><i class="ti ti-steering-wheel"></i></div>
+          <div class="stat-change up"><i class="ti ti-trending-up" style="font-size:10px"></i>+3</div>
+        </div>
+        <div class="stat-val">27</div>
+        <div class="stat-label">Active Drivers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon-wrap muted"><i class="ti ti-clock-hour-3"></i></div>
+          <div class="stat-change down"><i class="ti ti-trending-down" style="font-size:10px"></i>-2min</div>
+        </div>
+        <div class="stat-val">8.4m</div>
+        <div class="stat-label">Avg. Wait Time</div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <!-- Recent Rides -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-list-details"></i> Recent Rides</div>
+          <div class="card-action" onclick="navigate('rides',document.querySelectorAll('.nav-item')[1])">
+            View all <i class="ti ti-arrow-right" style="font-size:12px"></i>
+          </div>
+        </div>
+        <table class="rides-table">
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>Driver</th>
+              <th>Fare</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="recent-rides"></tbody>
+        </table>
+      </div>
+
+      <!-- Right column -->
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <!-- Live Map -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-map-pin"></i> Live Dispatch</div>
+            <div class="card-action"><span class="pulse" style="color:var(--accent)">●</span> Live</div>
+          </div>
+          <div class="map-area">
+            <div class="map-grid"></div>
+            <div class="map-road-h" style="top:35%;height:14px"></div>
+            <div class="map-road-h" style="top:65%;height:10px"></div>
+            <div class="map-road-v" style="left:28%;width:12px"></div>
+            <div class="map-road-v" style="left:65%;width:10px"></div>
+            <!-- Pins -->
+            <div class="map-pin" style="top:22%;left:28%">
+              <div class="map-pin-dot green"></div>
+              <div class="map-pin-label">Pickup A</div>
+            </div>
+            <div class="map-pin" style="top:50%;left:66%">
+              <div class="map-pin-dot amber"></div>
+              <div class="map-pin-label">Drop B</div>
+            </div>
+            <div class="map-pin" style="top:30%;left:50%">
+              <div class="map-pin-dot blue"></div>
+              <div class="map-pin-label">Pickup C</div>
+            </div>
+            <!-- Cars -->
+            <div class="map-car" id="car1" style="top:36%;left:40%">🚖</div>
+            <div class="map-car" id="car2" style="top:66%;left:55%">🚖</div>
+            <div class="map-overlay">
+              <div class="map-chip"><div class="dot green"></div>Pickup (2)</div>
+              <div class="map-chip"><div class="dot amber"></div>Dropoff (1)</div>
+              <div class="map-chip"><i class="ti ti-car" style="font-size:12px;color:var(--text-muted)"></i>En Route (4)</div>
+            </div>
+          </div>
+          <div style="padding:14px 18px">
+            <div style="font-size:12px;color:var(--text-muted)">Tracking <strong style="color:var(--text-primary)">4 active vehicles</strong> across the city zone</div>
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-activity"></i> Activity Feed</div>
+          </div>
+          <div class="activity-list" id="activity-feed"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BOOK RIDE PAGE ── -->
+  <div class="page" id="page-book">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Book a Ride</div>
+        <div class="section-subtitle">Manually assign or auto-dispatch a driver</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <!-- Manual Booking -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-route"></i> Manual Booking</div>
+        </div>
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Passenger ID</label>
+              <input type="number" class="form-input" placeholder="e.g. 101" id="b-passenger" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Driver ID</label>
+              <input type="number" class="form-input" placeholder="e.g. 7" id="b-driver" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Pickup Address</label>
+              <input type="text" class="form-input" placeholder="Enter pickup location" id="b-pickup" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Dropoff Address</label>
+              <input type="text" class="form-input" placeholder="Enter destination" id="b-dropoff" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fare (₹)</label>
+              <input type="number" class="form-input" placeholder="0.00" id="b-fare" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Vehicle Type</label>
+              <select class="form-input">
+                <option>Any</option>
+                <option>Sedan</option>
+                <option>SUV</option>
+                <option>Auto</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="handleBookRide()">
+            <i class="ti ti-circle-check"></i> Confirm Booking
+          </button>
+          <button class="btn-outline" onclick="clearForm()">
+            <i class="ti ti-x"></i> Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Auto Match -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-robot"></i> Auto-Dispatch</div>
+          <div style="font-size:11px;background:var(--accent-pale);color:var(--accent);padding:3px 10px;border-radius:20px;font-weight:500">AI Powered</div>
+        </div>
+        <div class="form-section">
+          <div style="background:var(--accent-pale);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px">
+            <div style="font-size:13px;font-weight:500;color:var(--accent);margin-bottom:4px">Smart Matching</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">Automatically finds the nearest available driver based on proximity and availability. No driver ID needed.</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Passenger ID</label>
+              <input type="number" class="form-input" placeholder="e.g. 101" id="ab-passenger" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fare (₹)</label>
+              <input type="number" class="form-input" placeholder="0.00" id="ab-fare" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Pickup Address</label>
+              <input type="text" class="form-input" placeholder="Enter pickup location" id="ab-pickup" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Dropoff Address</label>
+              <input type="text" class="form-input" placeholder="Enter destination" id="ab-dropoff" />
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="handleAutoMatch()">
+            <i class="ti ti-robot"></i> Auto-Match Driver
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DRIVERS PAGE ── -->
+  <div class="page" id="page-drivers">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Drivers</div>
+        <div class="section-subtitle">Manage your driver fleet</div>
+      </div>
+      <button class="btn-primary" onclick="navigate('register',document.querySelectorAll('.nav-item')[7])">
+        <i class="ti ti-plus"></i> Add Driver
+      </button>
+    </div>
+    <div class="card">
+      <div class="drivers-grid" id="drivers-list"></div>
+    </div>
+  </div>
+
+  <!-- ── USERS PAGE ── -->
+  <div class="page" id="page-users">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Passengers</div>
+        <div class="section-subtitle">Registered passenger accounts</div>
+      </div>
+      <button class="btn-primary" onclick="navigate('newuser',document.querySelectorAll('.nav-item')[8])">
+        <i class="ti ti-plus"></i> Add Passenger
+      </button>
+    </div>
+    <div class="card">
+      <div class="users-list" id="users-list"></div>
+    </div>
+  </div>
+
+  <!-- ── RIDE HISTORY PAGE ── -->
+  <div class="page" id="page-history">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Ride History</div>
+        <div class="section-subtitle">Complete log of all rides</div>
+      </div>
+      <div class="filters" id="status-filters">
+        <button class="filter-btn active" onclick="filterHistory('all',this)">All</button>
+        <button class="filter-btn" onclick="filterHistory('completed',this)">Completed</button>
+        <button class="filter-btn" onclick="filterHistory('ongoing',this)">Ongoing</button>
+        <button class="filter-btn" onclick="filterHistory('pending',this)">Pending</button>
+      </div>
+    </div>
+    <div class="card">
+      <table class="rides-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Route</th>
+            <th>Passenger</th>
+            <th>Driver</th>
+            <th>Fare</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── ACTIVE RIDES PAGE ── -->
+  <div class="page" id="page-rides">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Active Rides</div>
+        <div class="section-subtitle">Currently dispatched rides</div>
+      </div>
+    </div>
+    <div class="card">
+      <table class="rides-table">
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Route</th>
+            <th>Driver</th>
+            <th>Fare</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="active-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── REGISTER DRIVER PAGE ── -->
+  <div class="page" id="page-register">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Register Driver</div>
+        <div class="section-subtitle">Add a new driver to your fleet</div>
+      </div>
+    </div>
+    <div style="max-width:600px">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-steering-wheel"></i> Driver Details</div>
+        </div>
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" placeholder="e.g. Rajan Kumar" id="d-name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">License Number</label>
+              <input type="text" class="form-input" placeholder="MP-XX-XXXXXXXXXX" id="d-license" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" class="form-input" placeholder="+91 XXXXX XXXXX" id="d-phone" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Vehicle Type</label>
+              <select class="form-input" id="d-vehicle">
+                <option value="">Select vehicle type</option>
+                <option>Sedan</option>
+                <option>SUV</option>
+                <option>Hatchback</option>
+                <option>Auto Rickshaw</option>
+                <option>Cab</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="handleRegisterDriver()">
+            <i class="ti ti-user-check"></i> Register Driver
+          </button>
+          <button class="btn-outline">Clear Form</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NEW USER PAGE ── -->
+  <div class="page" id="page-newuser">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Add Passenger</div>
+        <div class="section-subtitle">Create a new passenger account</div>
+      </div>
+    </div>
+    <div style="max-width:500px">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-user"></i> Passenger Info</div>
+        </div>
+        <div class="form-section">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" placeholder="e.g. Priya Sharma" id="u-name" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" placeholder="priya@example.com" id="u-email" />
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="handleCreateUser()">
+            <i class="ti ti-circle-check"></i> Create Account
+          </button>
+          <button class="btn-outline">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ── DATA ──
+const RIDES = [
+  { id: 101, passenger: "Priya S.", driver: "Rajan K.", driverInit: "RK", from: "Arera Colony", to: "MP Nagar", fare: 140, status: "completed", time: "9:42 AM" },
+  { id: 102, passenger: "Amit V.", driver: "Suresh P.", driverInit: "SP", from: "New Market", to: "AIIMS Bhopal", fare: 220, status: "ongoing", time: "10:15 AM" },
+  { id: 103, passenger: "Neha G.", driver: "Dev R.", driverInit: "DR", from: "TT Nagar", to: "Bairagarh", fare: 310, status: "ongoing", time: "10:28 AM" },
+  { id: 104, passenger: "Karan M.", driver: "Ankit J.", driverInit: "AJ", from: "Habibganj", to: "Kolar Road", fare: 180, status: "pending", time: "10:44 AM" },
+  { id: 105, passenger: "Sneha T.", driver: "Ramesh B.", driverInit: "RB", from: "Shyamla Hills", to: "DB Mall", fare: 90, status: "completed", time: "8:30 AM" },
+  { id: 106, passenger: "Vikram S.", driver: "Deepak C.", driverInit: "DC", from: "BHEL", to: "Old Bhopal", fare: 260, status: "cancelled", time: "7:55 AM" },
+];
+
+const DRIVERS = [
+  { id: 1, name: "Rajan Kumar", init: "RK", vehicle: "Sedan", license: "MP09-2019-0041832", phone: "+91 98765 43210", status: "available", rating: 4.9, rides: 312 },
+  { id: 2, name: "Suresh Patel", init: "SP", vehicle: "SUV", license: "MP09-2020-0051923", phone: "+91 87654 32109", status: "busy", rating: 4.7, rides: 278 },
+  { id: 3, name: "Dev Rawat", init: "DR", vehicle: "Hatchback", license: "MP09-2021-0062014", phone: "+91 76543 21098", status: "busy", rating: 4.8, rides: 195 },
+  { id: 4, name: "Ankit Jain", init: "AJ", vehicle: "Sedan", license: "MP09-2018-0031741", phone: "+91 65432 10987", status: "available", rating: 4.6, rides: 421 },
+  { id: 5, name: "Ramesh Babu", init: "RB", vehicle: "Auto", license: "MP09-2017-0021630", phone: "+91 54321 09876", status: "offline", rating: 4.5, rides: 560 },
+  { id: 6, name: "Deepak Chouhan", init: "DC", vehicle: "Cab", license: "MP09-2022-0072105", phone: "+91 43210 98765", status: "available", rating: 4.8, rides: 134 },
+];
+
+const USERS = [
+  { id: 1, name: "Priya Sharma", email: "priya.s@gmail.com", rides: 28, spent: 3820 },
+  { id: 2, name: "Amit Verma", email: "amit.v@gmail.com", rides: 15, spent: 2140 },
+  { id: 3, name: "Neha Gupta", email: "neha.g@outlook.com", rides: 42, spent: 6300 },
+  { id: 4, name: "Karan Malhotra", email: "karan.m@yahoo.com", rides: 9, spent: 1100 },
+  { id: 5, name: "Sneha Tiwari", email: "sneha.t@gmail.com", rides: 33, spent: 4750 },
+];
+
+const ACTIVITY = [
+  { icon: "ti-circle-check", type: "green", title: "Ride #101 completed", detail: "Rajan K. · Arera Colony → MP Nagar · ₹140", time: "2 min ago" },
+  { icon: "ti-user-plus", type: "blue", title: "New driver registered", detail: "Deepak Chouhan joined the fleet", time: "18 min ago" },
+  { icon: "ti-alert-circle", type: "amber", title: "Ride #104 awaiting driver", detail: "Karan M. waiting at Habibganj", time: "32 min ago" },
+  { icon: "ti-x", type: "red", title: "Ride #106 cancelled", detail: "Vikram S. · BHEL → Old Bhopal", time: "1 hr ago" },
+];
+
+// ── RENDER ──
+function renderRecentRides() {
+  const tbody = document.getElementById('recent-rides');
+  tbody.innerHTML = RIDES.slice(0,5).map(r => `
+    <tr>
+      <td><div class="route-cell">
+        <div class="route-from">${r.from}</div>
+        <div class="route-to"><span class="route-arrow">→</span> ${r.to}</div>
+      </div></td>
+      <td><div class="driver-cell">
+        <div class="mini-avatar">${r.driverInit}</div>
+        <span style="font-size:13px">${r.driver}</span>
+      </div></td>
+      <td><div class="fare-cell">₹${r.fare}<small>${r.time}</small></div></td>
+      <td><span class="status-pill ${r.status}">${capitalize(r.status)}</span></td>
+    </tr>`).join('');
+}
+
+function renderActivity() {
+  const el = document.getElementById('activity-feed');
+  el.innerHTML = ACTIVITY.map(a => `
+    <div class="activity-item">
+      <div class="act-icon-wrap ${a.type}"><i class="ti ${a.icon}"></i></div>
+      <div class="act-body">
+        <div class="act-title">${a.title}</div>
+        <div class="act-detail">${a.detail}</div>
+      </div>
+      <div class="act-time">${a.time}</div>
+    </div>`).join('');
+}
+
+function renderDrivers() {
+  const el = document.getElementById('drivers-list');
+  el.innerHTML = DRIVERS.map(d => `
+    <div class="driver-card">
+      <div class="driver-card-top">
+        <div class="driver-avatar">${d.init}</div>
+        <div>
+          <div class="driver-name">${d.name}</div>
+          <div class="driver-vehicle">${d.vehicle}</div>
+        </div>
+        <div class="driver-status">
+          <span class="status-pill ${d.status === 'available' ? 'completed' : d.status === 'busy' ? 'ongoing' : 'cancelled'}">${capitalize(d.status)}</span>
+        </div>
+      </div>
+      <div class="driver-meta">
+        <div class="driver-meta-row"><i class="ti ti-id-badge"></i>${d.license}</div>
+        <div class="driver-meta-row"><i class="ti ti-phone"></i>${d.phone}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+          <div class="driver-rating">★ ${d.rating}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${d.rides} rides</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderUsers() {
+  const el = document.getElementById('users-list');
+  el.innerHTML = USERS.map(u => `
+    <div class="user-row">
+      <div class="user-big-avatar">${u.name.split(' ').map(w=>w[0]).join('')}</div>
+      <div class="user-info">
+        <div class="user-name">${u.name}</div>
+        <div class="user-email">${u.email}</div>
+      </div>
+      <div class="user-meta">
+        <div class="user-rides"><i class="ti ti-route" style="font-size:13px"></i>${u.rides} rides</div>
+        <div class="user-spent">₹${u.spent.toLocaleString()}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderHistory(filter = 'all') {
+  const tbody = document.getElementById('history-tbody');
+  const filtered = filter === 'all' ? RIDES : RIDES.filter(r => r.status === filter);
+  tbody.innerHTML = filtered.map(r => `
+    <tr>
+      <td style="color:var(--text-muted);font-size:12px">#${r.id}</td>
+      <td><div class="route-cell">
+        <div class="route-from">${r.from}</div>
+        <div class="route-to"><span class="route-arrow">→</span> ${r.to}</div>
+      </div></td>
+      <td style="font-size:13px">${r.passenger}</td>
+      <td><div class="driver-cell">
+        <div class="mini-avatar">${r.driverInit}</div>
+        <span style="font-size:13px">${r.driver}</span>
+      </div></td>
+      <td class="fare-cell">₹${r.fare}</td>
+      <td><span class="status-pill ${r.status}">${capitalize(r.status)}</span></td>
+      <td>${r.status === 'ongoing' ? `<button class="btn-outline" style="padding:4px 10px;font-size:11px" onclick="completeRide(${r.id})"><i class="ti ti-check" style="font-size:12px"></i> Complete</button>` : '<span style="font-size:12px;color:var(--text-muted)">—</span>'}</td>
+    </tr>`).join('');
+}
+
+function renderActiveRides() {
+  const tbody = document.getElementById('active-tbody');
+  const active = RIDES.filter(r => r.status === 'ongoing' || r.status === 'pending');
+  tbody.innerHTML = active.map(r => `
+    <tr>
+      <td style="font-weight:500">#${r.id}</td>
+      <td><div class="route-cell">
+        <div class="route-from">${r.from}</div>
+        <div class="route-to"><span class="route-arrow">→</span> ${r.to}</div>
+      </div></td>
+      <td><div class="driver-cell">
+        <div class="mini-avatar">${r.driverInit}</div>
+        ${r.driver}
+      </div></td>
+      <td class="fare-cell">₹${r.fare}</td>
+      <td><span class="status-pill ${r.status}">${capitalize(r.status)}</span></td>
+      <td><button class="btn-outline" style="padding:5px 12px;font-size:12px" onclick="completeRide(${r.id})">
+        <i class="ti ti-flag" style="font-size:13px;color:var(--accent)"></i> Complete
+      </button></td>
+    </tr>`).join('');
+}
+
+// ── NAVIGATION ──
+const PAGE_TITLES = {
+  dashboard: '<span>Dashboard</span> Overview',
+  rides: '<span>Active</span> Rides',
+  book: '<span>Book</span> a Ride',
+  drivers: '<span>Driver</span> Fleet',
+  users: '<span>Passenger</span> Accounts',
+  history: '<span>Ride</span> History',
+  register: '<span>Register</span> Driver',
+  newuser: '<span>Add</span> Passenger',
+};
+
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('page-title').innerHTML = PAGE_TITLES[page] || page;
+  if (page === 'history') renderHistory();
+  if (page === 'rides') renderActiveRides();
+}
+
+// ── FILTER ──
+function filterHistory(status, btn) {
+  document.querySelectorAll('#status-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory(status);
+}
+
+// ── HANDLERS ──
+function handleBookRide() {
+  const pid = document.getElementById('b-passenger').value;
+  const did = document.getElementById('b-driver').value;
+  const pickup = document.getElementById('b-pickup').value;
+  const dropoff = document.getElementById('b-dropoff').value;
+  const fare = document.getElementById('b-fare').value;
+  if (!pid || !did || !pickup || !dropoff || !fare) { showToast('Please fill all required fields', 'warning'); return; }
+  const newRide = { id: 200 + RIDES.length, passenger: `User #${pid}`, driver: `Driver #${did}`, driverInit: 'D'+did, from: pickup, to: dropoff, fare: parseFloat(fare), status: 'pending', time: 'Just now' };
+  RIDES.unshift(newRide);
+  showToast(`Ride booked! Booking #${newRide.id} created`);
+  clearForm();
+  renderRecentRides();
+}
+
+function handleAutoMatch() {
+  const pid = document.getElementById('ab-passenger').value;
+  const pickup = document.getElementById('ab-pickup').value;
+  const dropoff = document.getElementById('ab-dropoff').value;
+  const fare = document.getElementById('ab-fare').value;
+  if (!pid || !pickup || !dropoff || !fare) { showToast('Please fill all fields', 'warning'); return; }
+  const available = DRIVERS.filter(d => d.status === 'available');
+  if (!available.length) { showToast('No available drivers right now', 'error'); return; }
+  const assigned = available[0];
+  assigned.status = 'busy';
+  const rid = 300 + RIDES.length;
+  RIDES.unshift({ id: rid, passenger: `User #${pid}`, driver: assigned.name, driverInit: assigned.init, from: pickup, to: dropoff, fare: parseFloat(fare), status: 'ongoing', time: 'Just now' });
+  showToast(`Auto-matched! ${assigned.name} dispatched (Booking #${rid})`);
+  renderDrivers(); renderRecentRides();
+}
+
+function handleRegisterDriver() {
+  const name = document.getElementById('d-name').value;
+  const license = document.getElementById('d-license').value;
+  const phone = document.getElementById('d-phone').value;
+  const vehicle = document.getElementById('d-vehicle').value;
+  if (!name || !license || !phone || !vehicle) { showToast('Please fill all fields', 'warning'); return; }
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  DRIVERS.push({ id: DRIVERS.length+1, name, init: initials, vehicle, license, phone, status: 'available', rating: 5.0, rides: 0 });
+  showToast(`Driver "${name}" registered successfully!`);
+  ['d-name','d-license','d-phone'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('d-vehicle').value = '';
+}
+
+function handleCreateUser() {
+  const name = document.getElementById('u-name').value;
+  const email = document.getElementById('u-email').value;
+  if (!name || !email) { showToast('Please fill all fields', 'warning'); return; }
+  USERS.push({ id: USERS.length+1, name, email, rides: 0, spent: 0 });
+  showToast(`Passenger "${name}" created!`);
+  document.getElementById('u-name').value = '';
+  document.getElementById('u-email').value = '';
+  renderUsers();
+}
+
+function completeRide(id) {
+  const ride = RIDES.find(r => r.id === id);
+  if (ride) { ride.status = 'completed'; showToast(`Ride #${id} marked complete`); renderHistory(); renderActiveRides(); renderRecentRides(); }
+}
+
+function clearForm() {
+  ['b-passenger','b-driver','b-pickup','b-dropoff','b-fare'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+}
+
+// ── TOAST ──
+function showToast(msg, type='success') {
+  const icons = { success:'ti-circle-check', warning:'ti-alert-circle', error:'ti-x' };
+  const colors = { success:'#7EE8A2', warning:'#F5C65A', error:'#F48080' };
+  const wrap = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<i class="ti ${icons[type]||icons.success}" style="color:${colors[type]||colors.success}"></i>${msg}`;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.4s'; setTimeout(()=>t.remove(),400); }, 3200);
+}
+
+// ── HELPERS ──
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// ── FILTER BUTTONS TOGGLE ──
+document.querySelectorAll('.filters .filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    if (this.closest('#status-filters')) return;
+    this.closest('.filters').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ── CAR ANIMATION ──
+function animateCars() {
+  const car1 = document.getElementById('car1');
+  const car2 = document.getElementById('car2');
+  if (!car1 || !car2) return;
+  const positions1 = [['36%','40%'],['36%','55%'],['50%','65%'],['36%','40%']];
+  const positions2 = [['66%','55%'],['35%','55%'],['35%','30%'],['66%','55%']];
+  let i = 0;
+  setInterval(() => {
+    i = (i+1) % 3;
+    car1.style.top = positions1[i][0]; car1.style.left = positions1[i][1];
+    car2.style.top = positions2[i][0]; car2.style.left = positions2[i][1];
+  }, 3500);
+}
+
+// ── RESPONSIVE ──
+function checkMobile() {
+  const menuBtn = document.getElementById('menu-btn');
+  if (window.innerWidth <= 780) { menuBtn.style.display = 'flex'; }
+  else { menuBtn.style.display = 'none'; document.getElementById('sidebar').classList.remove('open'); }
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+window.addEventListener('resize', checkMobile);
+checkMobile();
+
+// ── INIT ──
+renderRecentRides();
+renderActivity();
+renderDrivers();
+renderUsers();
+animateCars();
+</script>
+</body>
+</html>
