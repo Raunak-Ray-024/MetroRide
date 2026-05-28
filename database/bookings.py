@@ -1,9 +1,9 @@
 import psycopg2
-# from config.database import conn
+from config.database import conn
 
 #  CHANGE TO THIS:
-from config.database import get_db_connection
-conn = get_db_connection()
+# from config.database import get_db_connection
+# conn = get_db_connection()
 # ... now your existing cursor code (like conn.cursor()) will work perfectly!
 
 class Bookings:

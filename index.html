@@ -3,1139 +3,905 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MetroRide — Urban Transit</title>
+<title>Metro-Ride Command Center</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;800&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-void:       #080C0F;
-  --bg-deep:       #0D1318;
-  --bg-surface:    #111820;
-  --bg-raised:     #162028;
-  --bg-hover:      #1C2A35;
-  --glass-bg:      rgba(16, 26, 36, 0.72);
-  --glass-border:  rgba(0, 229, 190, 0.12);
-  --teal:          #00E5BE;
-  --teal-dim:      #00B896;
-  --teal-glow:     rgba(0, 229, 190, 0.18);
-  --teal-faint:    rgba(0, 229, 190, 0.06);
-  --amber:         #F5A623;
-  --amber-dim:     rgba(245, 166, 35, 0.15);
-  --red:           #FF4D6A;
-  --red-dim:       rgba(255, 77, 106, 0.15);
-  --green:         #2ECC8F;
-  --green-dim:     rgba(46, 204, 143, 0.15);
-  --white:         #F0F4F7;
-  --white-60:      rgba(240, 244, 247, 0.60);
-  --white-30:      rgba(240, 244, 247, 0.30);
-  --white-12:      rgba(240, 244, 247, 0.12);
-  --white-06:      rgba(240, 244, 247, 0.06);
-  --font-display:  'Syne', sans-serif;
-  --font-body:     'Instrument Sans', sans-serif;
-  --font-mono:     'IBM Plex Mono', monospace;
-  --r-sm: 8px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px;
-  --t: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --bg:         #0d1117;
+  --surface:    #161b27;
+  --card:       #1a2030;
+  --card2:      #1e2538;
+  --border:     #2d3650;
+  --border-hi:  #3f4f72;
+  --text:       #dde4f0;
+  --muted:      #6e7fa8;
+  --subtle:     #3a4560;
+  --blue:       #4f8ef7;
+  --blue-dim:   #162040;
+  --blue-glow:  rgba(79,142,247,0.15);
+  --green:      #34d399;
+  --green-dim:  #0a2d20;
+  --green-glow: rgba(52,211,153,0.12);
+  --red:        #f87171;
+  --amber:      #fbbf24;
+  --purple:     #a78bfa;
+  --mono:       'Space Mono', monospace;
+  --display:    'Syne', sans-serif;
+  --sans:       'DM Sans', sans-serif;
+  --radius:     10px;
+  --radius-lg:  16px;
+  --radius-xl:  22px;
 }
 
-html { scroll-behavior: smooth; }
+html { font-size: 14px; }
 
 body {
-  font-family: var(--font-body);
-  background: var(--bg-void);
-  color: var(--white);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
-  cursor: default;
+  position: relative;
 }
 
-/* ── Background atmosphere ── */
-.bg-atmosphere {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  overflow: hidden;
+/* ── BACKGROUND MESH ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(79,142,247,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(52,211,153,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 50% 100%, rgba(167,139,250,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
 }
-.bg-orb {
-  position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.3;
-}
-.bg-orb-1 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(0,229,190,0.25) 0%, transparent 70%); top: -200px; left: -200px; animation: orbFloat1 20s ease-in-out infinite; }
-.bg-orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%); bottom: -100px; right: -100px; animation: orbFloat2 25s ease-in-out infinite; }
-.bg-orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,229,190,0.10) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); animation: orbFloat3 30s ease-in-out infinite; }
-.bg-grid {
-  position: absolute; inset: 0;
-  background-image: linear-gradient(rgba(0,229,190,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,190,0.03) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-@keyframes orbFloat1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(80px,60px)} }
-@keyframes orbFloat2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-60px,-40px)} }
-@keyframes orbFloat3 { 0%,100%{transform:translate(-50%,-50%)} 50%{transform:translate(-46%,-54%)} }
+body > * { position: relative; z-index: 1; }
 
-/* ── Layout ── */
-.app-shell { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
-
-/* ── Header ── */
-.header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 28px 0 48px;
-  animation: fadeDown 0.6s ease both;
-}
-.header-brand { display: flex; align-items: center; gap: 14px; }
-.brand-icon {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--teal), var(--teal-dim));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; box-shadow: 0 0 24px var(--teal-glow);
-}
-.brand-name { font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-.brand-name span { color: var(--teal); }
-.brand-tag { font-family: var(--font-mono); font-size: 10px; color: var(--white-30); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
-.header-status {
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-mono); font-size: 11px; color: var(--white-30);
-  background: var(--white-06); border: 1px solid var(--white-12);
-  padding: 8px 14px; border-radius: 40px;
-}
-.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
-
-/* ── Session banner ── */
-.session-banner {
-  display: none; align-items: center; gap: 14px;
-  background: linear-gradient(135deg, rgba(0,229,190,0.08), rgba(0,229,190,0.03));
-  border: 1px solid var(--glass-border);
-  border-radius: var(--r-lg); padding: 16px 22px; margin-bottom: 32px;
-  animation: fadeUp 0.4s ease both;
-}
-.session-banner.visible { display: flex; }
-.session-avatar {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--teal), var(--teal-dim));
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 16px; font-weight: 700; color: var(--bg-void);
-  flex-shrink: 0;
-}
-.session-info { flex: 1; }
-.session-name { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
-.session-id { font-family: var(--font-mono); font-size: 11px; color: var(--teal); margin-top: 2px; }
-.session-logout {
-  font-family: var(--font-mono); font-size: 11px; color: var(--white-30);
-  background: none; border: 1px solid var(--white-12); border-radius: 6px;
-  padding: 5px 10px; cursor: pointer; transition: all var(--t);
-}
-.session-logout:hover { color: var(--red); border-color: var(--red); }
-
-/* ── Nav tabs ── */
-.nav-tabs {
-  display: flex; gap: 4px;
-  background: var(--glass-bg); border: 1px solid var(--white-12);
-  border-radius: var(--r-xl); padding: 5px; margin-bottom: 36px;
+/* ── TOPBAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  height: 62px;
+  background: rgba(22,27,39,0.85);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
   backdrop-filter: blur(16px);
-  animation: fadeDown 0.7s ease both;
-  overflow-x: auto; scrollbar-width: none;
 }
-.nav-tabs::-webkit-scrollbar { display: none; }
-.nav-tab {
-  flex: 1; min-width: 120px; display: flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 11px 16px; border-radius: var(--r-lg);
-  font-family: var(--font-body); font-size: 13px; font-weight: 500;
-  color: var(--white-30); cursor: pointer; transition: all var(--t); white-space: nowrap;
-  border: 1px solid transparent;
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
 }
-.nav-tab .tab-icon { font-size: 16px; }
-.nav-tab:hover { color: var(--white-60); background: var(--white-06); }
-.nav-tab.active {
-  background: linear-gradient(135deg, rgba(0,229,190,0.15), rgba(0,229,190,0.08));
-  color: var(--teal); border-color: var(--glass-border);
-  box-shadow: 0 0 20px rgba(0,229,190,0.08);
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--blue-dim), rgba(79,142,247,0.2));
+  border: 1px solid rgba(79,142,247,0.35);
+  border-radius: 8px;
 }
-.nav-tab .tab-badge {
-  width: 18px; height: 18px; border-radius: 50%;
-  background: var(--teal); color: var(--bg-void);
-  font-family: var(--font-mono); font-size: 9px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
+.topbar-logo svg { color: var(--blue); }
+.status-pill {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.07em;
+  color: var(--muted); background: var(--card);
+  border: 1px solid var(--border); border-radius: 999px; padding: 5px 14px;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--muted); transition: background 0.4s, box-shadow 0.4s;
+}
+.status-dot.online  { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.status-dot.offline { background: var(--red);   box-shadow: 0 0 8px var(--red); }
+
+/* ── HERO HEADER ── */
+.hero {
+  text-align: center;
+  padding: 3.5rem 1rem 2.5rem;
+  position: relative;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--blue);
+  background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2);
+  border-radius: 999px; padding: 5px 16px; margin-bottom: 1.2rem;
+}
+.hero-eyebrow span { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); display: inline-block; }
+.hero-title {
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 0.9rem;
+}
+.hero-title .word-metro { color: var(--blue); }
+.hero-title .word-ride  {
+  background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-sub {
+  font-size: 1rem; color: var(--muted); max-width: 480px; margin: 0 auto 0.5rem;
+  font-weight: 400;
+}
+.hero-line {
+  width: 80px; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  margin: 1.5rem auto 0;
+  border-radius: 2px;
 }
 
-/* ── Pages ── */
-.page { display: none; animation: fadeUp 0.35s ease both; }
-.page.active { display: block; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:translateY(0) } }
-@keyframes fadeDown { from { opacity:0; transform:translateY(-14px) } to { opacity:1; transform:translateY(0) } }
+/* ── LAYOUT ── */
+.wrapper {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 0 1.75rem 5rem;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  margin-bottom: 1.75rem;
+}
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+.col { display: flex; flex-direction: column; gap: 1.25rem; }
 
-/* ── Glass card ── */
-.glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--r-xl);
-  backdrop-filter: blur(20px);
+/* ── COLUMN LABELS ── */
+.col-label {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em;
+  text-transform: uppercase; padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border); margin-bottom: 0.15rem;
+}
+.col-label.passenger { color: var(--blue); }
+.col-label.driver    { color: var(--green); }
+.col-label .dot { width: 6px; height: 6px; border-radius: 50%; }
+.col-label.passenger .dot { background: var(--blue); box-shadow: 0 0 6px var(--blue); }
+.col-label.driver    .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+/* ── CARD ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1.6rem;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  position: relative;
   overflow: hidden;
-  transition: box-shadow var(--t);
 }
-.glass-card:hover { box-shadow: 0 0 40px rgba(0,229,190,0.06); }
-.card-header {
-  padding: 26px 28px 20px;
-  border-bottom: 1px solid var(--white-06);
-  display: flex; align-items: flex-start; gap: 14px;
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  pointer-events: none;
 }
-.card-icon {
-  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center; font-size: 19px;
+.card:focus-within {
+  border-color: var(--border-hi);
+  box-shadow: 0 0 0 1px var(--border-hi), 0 8px 32px rgba(0,0,0,0.3);
 }
-.card-icon.teal { background: var(--teal-faint); border: 1px solid rgba(0,229,190,0.2); color: var(--teal); }
-.card-icon.amber { background: var(--amber-dim); border: 1px solid rgba(245,166,35,0.2); color: var(--amber); }
-.card-icon.green { background: var(--green-dim); border: 1px solid rgba(46,204,143,0.2); color: var(--green); }
-.card-icon.red { background: var(--red-dim); border: 1px solid rgba(255,77,106,0.2); color: var(--red); }
-.card-title-group { flex: 1; }
-.card-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-.card-subtitle { font-size: 12px; color: var(--white-30); margin-top: 3px; font-family: var(--font-mono); }
-.card-body { padding: 24px 28px; }
+.card.passenger-card::after {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,142,247,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.card.driver-card::after {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(52,211,153,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
 
-/* ── Form elements ── */
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-row.single { grid-template-columns: 1fr; }
-.form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
-.field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+.card-title {
+  font-family: var(--mono); font-size: 0.72rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 1.3rem;
+  display: flex; align-items: center; gap: 9px;
+}
+.card-title svg { flex-shrink: 0; opacity: 0.9; }
+.card-title.blue  { color: var(--blue); }
+.card-title.green { color: var(--green); }
+
+/* ── FORM ── */
+.field { margin-bottom: 1rem; }
 .field:last-of-type { margin-bottom: 0; }
-.field-label {
-  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
-  color: var(--white-30); letter-spacing: 1.5px; text-transform: uppercase;
+label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.77rem; font-weight: 500; color: var(--muted);
+  margin-bottom: 5px; letter-spacing: 0.02em;
 }
-.field-input {
-  background: rgba(255,255,255,0.04); border: 1px solid var(--white-12);
-  border-radius: var(--r-sm); padding: 12px 14px;
-  font-family: var(--font-body); font-size: 14px; color: var(--white);
-  outline: none; transition: all var(--t); width: 100%;
+label svg { opacity: 0.6; }
+input[type="text"],
+input[type="email"],
+input[type="number"] {
+  width: 100%;
+  background: rgba(13,17,23,0.7);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  padding: 9px 13px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-.field-input::placeholder { color: var(--white-30); }
-.field-input:focus {
-  border-color: rgba(0,229,190,0.4); background: rgba(0,229,190,0.04);
-  box-shadow: 0 0 0 3px rgba(0,229,190,0.08);
+input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(79,142,247,0.12), inset 0 1px 3px rgba(0,0,0,0.2);
 }
-select.field-input {
-  cursor: pointer; appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(240,244,247,0.3)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
-}
+input::placeholder { color: var(--subtle); }
 
-/* ── Buttons ── */
+/* ── BUTTONS ── */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 13px 24px; border-radius: var(--r-md);
-  font-family: var(--font-display); font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: all var(--t); border: none; white-space: nowrap;
-  letter-spacing: 0.2px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 18px; border-radius: var(--radius);
+  border: none; font-family: var(--sans); font-size: 0.85rem;
+  font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s, box-shadow 0.2s;
+  letter-spacing: 0.01em; width: 100%; margin-top: 1.15rem;
 }
-.btn-teal {
-  background: linear-gradient(135deg, var(--teal), var(--teal-dim));
-  color: var(--bg-void); box-shadow: 0 4px 20px rgba(0,229,190,0.3);
-}
-.btn-teal:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,229,190,0.4); }
-.btn-teal:active { transform: translateY(0); }
-.btn-teal:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.btn-ghost {
-  background: var(--white-06); color: var(--white-60);
-  border: 1px solid var(--white-12);
-}
-.btn-ghost:hover { background: var(--white-12); color: var(--white); }
-.btn-red {
-  background: linear-gradient(135deg, var(--red), #cc3355);
-  color: #fff; box-shadow: 0 4px 20px rgba(255,77,106,0.25);
-}
-.btn-red:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,77,106,0.35); }
-.btn-full { width: 100%; margin-top: 6px; }
-.btn-sm { padding: 9px 16px; font-size: 12px; border-radius: 8px; }
+.btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.btn:active:not(:disabled) { transform: translateY(0px); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ── Loading state ── */
-.loading-state {
-  display: none; flex-direction: column; align-items: center; justify-content: center;
-  padding: 48px 28px; gap: 20px;
+.btn-blue {
+  background: linear-gradient(135deg, #3a7ee8, #5a9ef8);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(79,142,247,0.25);
 }
-.loading-state.visible { display: flex; }
-.loader-ring {
-  width: 56px; height: 56px; border-radius: 50%;
-  border: 2px solid rgba(0,229,190,0.15);
-  border-top-color: var(--teal);
-  animation: spin 0.9s linear infinite;
+.btn-blue:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(79,142,247,0.4);
+}
+.btn-green {
+  background: linear-gradient(135deg, #0ea572, #34d399);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(52,211,153,0.2);
+}
+.btn-green:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(52,211,153,0.35);
+}
+.btn-red {
+  background: linear-gradient(135deg, #dc2626, #f87171);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(248,113,113,0.2);
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--surface); }
+
+/* ── FEEDBACK ── */
+.feedback {
+  margin-top: 0.9rem; padding: 10px 14px;
+  border-radius: var(--radius); font-size: 0.82rem; line-height: 1.5;
+  border: 1px solid transparent;
+  animation: fadeSlide 0.25s ease;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback.success {
+  background: rgba(52,211,153,0.08);
+  border-color: rgba(52,211,153,0.25); color: #6ee7b7;
+}
+.feedback.error {
+  background: rgba(248,113,113,0.07);
+  border-color: rgba(248,113,113,0.25); color: #fca5a5;
+}
+.feedback .fb-key {
+  font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+  display: block; margin-bottom: 2px;
+}
+.feedback .fb-val {
+  font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--green);
+}
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── LIVE TICKET ── */
+.ticket {
+  background: linear-gradient(135deg, #0c1829 0%, #0a1622 100%);
+  border: 1px solid rgba(79,142,247,0.3);
+  border-radius: var(--radius-xl);
+  padding: 1.6rem;
+  display: none;
+  animation: fadeSlide 0.35s ease;
+  position: relative; overflow: hidden;
+}
+.ticket::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -45deg, transparent, transparent 18px,
+    rgba(79,142,247,0.018) 18px, rgba(79,142,247,0.018) 36px
+  );
+  pointer-events: none;
+}
+.ticket::after {
+  content: '';
+  position: absolute; top: -80px; right: -80px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.ticket.show { display: block; }
+.ticket-header {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--blue);
+  margin-bottom: 1.1rem; display: flex; align-items: center; gap: 8px;
+}
+.ticket-header::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, rgba(79,142,247,0.3), transparent);
+}
+.ticket-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.05);
+}
+.ticket-row:last-of-type { border-bottom: none; }
+.ticket-row .t-key { font-size: 0.74rem; color: var(--muted); }
+.ticket-row .t-val { font-family: var(--mono); font-size: 0.88rem; color: var(--blue); font-weight: 700; }
+.ticket-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3);
+  color: var(--green); font-family: var(--mono); font-size: 0.62rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 999px; margin-top: 1rem;
+}
+.ticket-badge .pulse {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── STATS ROW ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.3rem;
+  display: flex; flex-direction: column; gap: 6px;
+  transition: border-color 0.2s;
+  position: relative; overflow: hidden;
+}
+.stat-card:hover { border-color: var(--border-hi); }
+.stat-card .s-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+}
+.stat-card .s-icon.blue  { background: rgba(79,142,247,0.12); color: var(--blue); }
+.stat-card .s-icon.green { background: rgba(52,211,153,0.10); color: var(--green); }
+.stat-card .s-icon.amber { background: rgba(251,191,36,0.10); color: var(--amber); }
+.stat-card .s-label { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.stat-card .s-val { font-family: var(--display); font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1.1; }
+.stat-card .s-sub { font-size: 0.72rem; color: var(--muted); }
+
+/* ── LEDGER ── */
+.ledger-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+}
+.ledger-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.4rem; flex-wrap: wrap; gap: 1rem;
+}
+.ledger-title {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.ledger-search { display: flex; gap: 8px; align-items: center; }
+.ledger-search input { width: 170px; padding: 8px 13px; font-size: 0.85rem; }
+.ledger-search .btn { width: auto; margin-top: 0; padding: 8px 18px; }
+
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+thead tr { background: rgba(13,17,23,0.6); }
+th {
+  font-family: var(--mono); font-size: 0.63rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted);
+  padding: 11px 14px; text-align: left;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+td {
+  padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--text); vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: rgba(79,142,247,0.04); }
+
+.status-chip {
+  display: inline-block; padding: 3px 10px; border-radius: 999px;
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em;
+  text-transform: uppercase; font-weight: 700;
+}
+.chip-completed { background: rgba(52,211,153,0.1);  color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
+.chip-ongoing   { background: rgba(79,142,247,0.1);  color: var(--blue);  border: 1px solid rgba(79,142,247,0.25); }
+.chip-cancelled { background: rgba(248,113,113,0.08); color: var(--red);  border: 1px solid rgba(248,113,113,0.2); }
+.fare-cell { font-family: var(--mono); color: var(--amber); font-size: 0.83rem; }
+.id-cell   { font-family: var(--mono); font-size: 0.76rem; color: var(--muted); }
+
+.empty-state {
+  text-align: center; padding: 3rem 1rem;
+  color: var(--muted); font-size: 0.85rem;
+}
+.empty-state svg { margin: 0 auto 0.6rem; display: block; opacity: 0.2; }
+
+/* input row */
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media (max-width: 500px) { .input-row { grid-template-columns: 1fr; } }
+
+/* spinner */
+.spinner {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loader-text { font-family: var(--font-mono); font-size: 12px; color: var(--white-30); text-align: center; line-height: 1.8; }
-.loader-dots::after { content: ''; animation: dots 1.5s steps(4,end) infinite; }
-@keyframes dots { 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} }
-
-/* ── Trip card ── */
-.trip-card {
-  display: none;
-  background: linear-gradient(135deg, rgba(0,229,190,0.06), rgba(0,229,190,0.02));
-  border: 1px solid rgba(0,229,190,0.2); border-radius: var(--r-lg);
-  overflow: hidden; animation: fadeUp 0.4s ease both;
-  margin-top: 20px;
-}
-.trip-card.visible { display: block; }
-.trip-card-header {
-  background: linear-gradient(135deg, rgba(0,229,190,0.12), rgba(0,229,190,0.06));
-  padding: 16px 22px; display: flex; align-items: center; gap: 12px;
-  border-bottom: 1px solid rgba(0,229,190,0.1);
-}
-.trip-live-dot {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
-  box-shadow: 0 0 10px var(--teal); animation: pulse 1.5s ease-in-out infinite; flex-shrink: 0;
-}
-.trip-live-label { font-family: var(--font-mono); font-size: 11px; color: var(--teal); letter-spacing: 1px; text-transform: uppercase; }
-.trip-booking-id { font-family: var(--font-mono); font-size: 11px; color: var(--white-30); margin-left: auto; }
-.trip-body { padding: 20px 22px; }
-.trip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
-.trip-field-label { font-family: var(--font-mono); font-size: 10px; color: var(--white-30); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 5px; }
-.trip-field-val { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--white); }
-.trip-route {
-  display: flex; align-items: center; gap: 10px; padding: 14px 16px;
-  background: rgba(255,255,255,0.04); border-radius: var(--r-md);
-  border: 1px solid var(--white-06); margin-bottom: 16px;
-}
-.route-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.route-dot.pickup { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
-.route-dot.drop { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
-.route-line { width: 1px; height: 24px; background: var(--white-12); margin: 0 2px; }
-.route-addr { font-size: 13px; color: var(--white-60); }
-.route-col { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-.route-item { display: flex; align-items: center; gap: 10px; }
-.fare-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--amber-dim); border: 1px solid rgba(245,166,35,0.25);
-  border-radius: 8px; padding: 6px 12px;
-  font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--amber);
-}
-
-/* ── History rows ── */
-.history-empty {
-  text-align: center; padding: 48px 24px;
-  font-family: var(--font-mono); font-size: 12px; color: var(--white-30);
-}
-.history-row {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 0; border-bottom: 1px solid var(--white-06);
-  animation: fadeUp 0.3s ease both;
-  transition: background var(--t);
-}
-.history-row:last-child { border-bottom: none; }
-.h-index {
-  font-family: var(--font-mono); font-size: 11px; color: var(--white-30);
-  width: 24px; flex-shrink: 0; text-align: right;
-}
-.h-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.h-body { flex: 1; min-width: 0; }
-.h-route { font-size: 13px; font-weight: 500; color: var(--white); display: flex; align-items: center; gap: 6px; }
-.h-route-arrow { color: var(--teal); font-size: 12px; }
-.h-meta { font-family: var(--font-mono); font-size: 11px; color: var(--white-30); margin-top: 3px; display: flex; gap: 12px; flex-wrap: wrap; }
-.h-fare { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
-.h-status { font-family: var(--font-mono); font-size: 10px; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.5px; }
-.h-status.completed { background: var(--green-dim); color: var(--green); }
-.h-status.ongoing { background: rgba(0,229,190,0.12); color: var(--teal); }
-.h-status.pending { background: var(--amber-dim); color: var(--amber); }
-.h-status.cancelled { background: var(--red-dim); color: var(--red); }
-
-/* ── Alert ── */
-.alert {
-  display: none; align-items: flex-start; gap: 10px;
-  padding: 13px 16px; border-radius: var(--r-md); margin-top: 14px;
-  font-size: 13px; animation: fadeUp 0.3s ease both;
-}
-.alert.visible { display: flex; }
-.alert.error { background: var(--red-dim); border: 1px solid rgba(255,77,106,0.25); color: #FF8FA0; }
-.alert.success { background: var(--green-dim); border: 1px solid rgba(46,204,143,0.25); color: #6EDDB0; }
-.alert.info { background: rgba(0,229,190,0.08); border: 1px solid rgba(0,229,190,0.2); color: var(--teal); }
-.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-
-/* ── Two-col layout ── */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-
-/* ── Stat strip ── */
-.stat-strip { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 28px; }
-.stat-tile {
-  background: var(--glass-bg); border: 1px solid var(--white-06);
-  border-radius: var(--r-lg); padding: 18px 20px;
-  backdrop-filter: blur(16px); transition: all var(--t);
-  animation: fadeUp 0.5s ease both;
-}
-.stat-tile:hover { border-color: var(--glass-border); box-shadow: 0 0 24px var(--teal-glow); }
-.stat-tile:nth-child(2) { animation-delay: 0.08s; }
-.stat-tile:nth-child(3) { animation-delay: 0.16s; }
-.stat-tile-val { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--teal); letter-spacing: -1px; }
-.stat-tile-label { font-family: var(--font-mono); font-size: 10px; color: var(--white-30); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 4px; }
-
-/* ── Divider ── */
-.divider { height: 1px; background: var(--white-06); margin: 22px 0; }
-
-/* ── Toast ── */
-.toast-wrap { position: fixed; bottom: 28px; right: 28px; z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-.toast {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--bg-raised); border: 1px solid var(--glass-border);
-  color: var(--white); padding: 13px 18px; border-radius: var(--r-md);
-  font-size: 13px; min-width: 260px; max-width: 360px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,229,190,0.08);
-  backdrop-filter: blur(20px);
-  animation: slideLeft 0.3s ease;
-  pointer-events: all;
-}
-.toast-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.toast-dot.teal { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
-.toast-dot.red { background: var(--red); }
-.toast-dot.amber { background: var(--amber); }
-@keyframes slideLeft { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
-
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--white-12); border-radius: 4px; }
-
-/* ── Responsive ── */
-@media (max-width: 720px) {
-  .app-shell { padding: 0 16px 60px; }
-  .two-col, .stat-strip, .three-col { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
-  .trip-grid { grid-template-columns: 1fr; }
-  .nav-tab span.tab-text { display: none; }
-  .header-status { display: none; }
-}
 </style>
 </head>
 <body>
 
-<!-- Background -->
-<div class="bg-atmosphere">
-  <div class="bg-grid"></div>
-  <div class="bg-orb bg-orb-1"></div>
-  <div class="bg-orb bg-orb-2"></div>
-  <div class="bg-orb bg-orb-3"></div>
+<!-- ── TOPBAR ── -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/>
+      </svg>
+    </div>
+    METRO‑RIDE &nbsp;/&nbsp; COMMAND CENTER
+  </div>
+  <div class="status-pill">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusLabel">CHECKING…</span>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-eyebrow">
+    <span></span>
+    Real-time Dispatch Platform
+  </div>
+  <h1 class="hero-title">
+    <span class="word-metro">Metro</span><span class="word-ride">Ride</span><br>Command Center
+  </h1>
+  <p class="hero-sub">Manage passengers, onboard drivers, dispatch trips and track ride history — all in one unified dashboard.</p>
+  <div class="hero-line"></div>
 </div>
 
-<div class="app-shell">
+<div class="wrapper">
 
-  <!-- Header -->
-  <header class="header">
-    <div class="header-brand">
-      <div class="brand-icon">🚇</div>
-      <div>
-        <div class="brand-name">Metro<span>Ride</span></div>
-        <div class="brand-tag">Urban Transit Network</div>
+  <!-- ── STATS ROW ── -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="s-icon blue">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
+      <span class="s-label">Passengers</span>
+      <span class="s-val" id="statPassengers">—</span>
+      <span class="s-sub">registered users</span>
     </div>
-    <div class="header-status">
-      <div class="status-dot"></div>
-      <span>LIVE · render.com</span>
+    <div class="stat-card">
+      <div class="s-icon green">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <span class="s-label">Drivers</span>
+      <span class="s-val" id="statDrivers">—</span>
+      <span class="s-sub">active on platform</span>
     </div>
-  </header>
-
-  <!-- Session Banner -->
-  <div class="session-banner" id="session-banner">
-    <div class="session-avatar" id="session-avatar">?</div>
-    <div class="session-info">
-      <div class="session-name" id="session-name">—</div>
-      <div class="session-id" id="session-id-label">PASSENGER_ID: —</div>
+    <div class="stat-card">
+      <div class="s-icon amber">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <span class="s-label">Last Booking</span>
+      <span class="s-val" id="statLastBooking">—</span>
+      <span class="s-sub">booking ID</span>
     </div>
-    <button class="session-logout" onclick="logOut()">SIGN OUT</button>
   </div>
 
-  <!-- Nav Tabs -->
-  <nav class="nav-tabs">
-    <div class="nav-tab active" onclick="showTab('onboard', this)">
-      <span class="tab-icon">👤</span><span class="tab-text">Onboard</span>
-    </div>
-    <div class="nav-tab" onclick="showTab('driver', this)">
-      <span class="tab-icon">🚖</span><span class="tab-text">Driver</span>
-    </div>
-    <div class="nav-tab" onclick="showTab('book', this)">
-      <span class="tab-icon">📍</span><span class="tab-text">Book Ride</span>
-    </div>
-    <div class="nav-tab" onclick="showTab('history', this)">
-      <span class="tab-icon">🕘</span><span class="tab-text">History</span>
-    </div>
-  </nav>
+  <!-- ── TWO COLUMNS ── -->
+  <div class="grid-2">
 
-  <!-- ══════════════════════════════════════
-       TAB 1 — ONBOARD
-  ══════════════════════════════════════ -->
-  <div class="page active" id="tab-onboard">
-    <div class="two-col">
+    <!-- ═══ PASSENGER CONSOLE ═══ -->
+    <div class="col">
+      <div class="col-label passenger"><span class="dot"></span> Passenger Console</div>
 
-      <!-- Register Passenger -->
-      <div class="glass-card">
-        <div class="card-header">
-          <div class="card-icon teal">👤</div>
-          <div class="card-title-group">
-            <div class="card-title">New Passenger</div>
-            <div class="card-subtitle">POST /users</div>
-          </div>
+      <!-- Account Setup -->
+      <div class="card passenger-card">
+        <div class="card-title blue">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Account Setup
         </div>
-        <div class="card-body">
-          <form id="form-user" onsubmit="handleCreateUser(event)">
-            <div class="field">
-              <label class="field-label">Full Name</label>
-              <input class="field-input" id="u-name" type="text" placeholder="e.g. Priya Sharma" required />
-            </div>
-            <div class="field">
-              <label class="field-label">Email Address</label>
-              <input class="field-input" id="u-email" type="email" placeholder="priya@example.com" required />
-            </div>
-            <div id="alert-user" class="alert"></div>
-            <button type="submit" class="btn btn-teal btn-full" id="btn-user">
-              <span>Create Account</span> <span>→</span>
-            </button>
-          </form>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Full Name
+          </label>
+          <input type="text" id="pName" placeholder="e.g. Rahul Sharma" />
         </div>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email Address
+          </label>
+          <input type="email" id="pEmail" placeholder="rahul@example.com" />
+        </div>
+        <button class="btn btn-blue" id="btnCreateUser" onclick="createUser()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Create Passenger Account
+        </button>
+        <div class="feedback" id="fbCreateUser"></div>
       </div>
 
-      <!-- Quick Login -->
-      <div class="glass-card">
-        <div class="card-header">
-          <div class="card-icon amber">🔑</div>
-          <div class="card-title-group">
-            <div class="card-title">Quick Sign In</div>
-            <div class="card-subtitle">Resume with existing ID</div>
-          </div>
+      <!-- Smart Match Booking -->
+      <div class="card passenger-card">
+        <div class="card-title blue">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Smart Match Booking
         </div>
-        <div class="card-body">
-          <p style="font-size:13px;color:var(--white-30);line-height:1.7;margin-bottom:20px">
-            Already registered? Enter your Passenger ID to resume booking rides. Your ID was shown when you first created your account.
-          </p>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Passenger ID
+          </label>
+          <input type="number" id="bmPassId" placeholder="e.g. 3" />
+        </div>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+            Pickup Address
+          </label>
+          <input type="text" id="bmPickup" placeholder="e.g. Bhopal Railway Station" />
+        </div>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Dropoff Address
+          </label>
+          <input type="text" id="bmDropoff" placeholder="e.g. DB Mall, Bhopal" />
+        </div>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Fare (₹)
+          </label>
+          <input type="number" id="bmFare" placeholder="e.g. 120.00" step="0.01" />
+        </div>
+        <button class="btn btn-blue" id="btnAutoMatch" onclick="autoMatch()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Find &amp; Dispatch Driver
+        </button>
+        <div class="feedback" id="fbAutoMatch"></div>
+      </div>
+
+      <!-- Live Trip Ticket -->
+      <div class="ticket" id="liveTicket">
+        <div class="ticket-header">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Live Trip Ticket
+        </div>
+        <div class="ticket-row">
+          <span class="t-key">Booking ID</span>
+          <span class="t-val" id="tkBookingId">—</span>
+        </div>
+        <div class="ticket-row">
+          <span class="t-key">Assigned Driver</span>
+          <span class="t-val" id="tkDriverId">—</span>
+        </div>
+        <div class="ticket-row">
+          <span class="t-key">Route</span>
+          <span class="t-val" id="tkRoute" style="font-size:0.72rem;text-align:right;max-width:58%">—</span>
+        </div>
+        <div class="ticket-row">
+          <span class="t-key">Fare</span>
+          <span class="t-val" id="tkFare" style="color:var(--amber)">—</span>
+        </div>
+        <div><span class="ticket-badge"><span class="pulse"></span> Trip Active</span></div>
+      </div>
+
+    </div><!-- end left col -->
+
+    <!-- ═══ DRIVER CONSOLE ═══ -->
+    <div class="col">
+      <div class="col-label driver"><span class="dot"></span> Driver Console</div>
+
+      <!-- Driver Onboarding -->
+      <div class="card driver-card">
+        <div class="card-title green">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Driver Onboarding
+        </div>
+        <div class="input-row">
           <div class="field">
-            <label class="field-label">Passenger ID</label>
-            <input class="field-input" id="login-id" type="number" placeholder="e.g. 3" min="1" />
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Driver Name
+            </label>
+            <input type="text" id="dName" placeholder="Full name" />
           </div>
           <div class="field">
-            <label class="field-label">Your Name (display)</label>
-            <input class="field-input" id="login-name" type="text" placeholder="e.g. Priya Sharma" />
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
+              License Number
+            </label>
+            <input type="text" id="dLicense" placeholder="e.g. MP09 2024" />
           </div>
-          <button class="btn btn-ghost btn-full" onclick="quickLogin()" style="margin-top:6px">
-            <span>Sign In</span>
-          </button>
-
-          <!-- Ride history lookup while here -->
-          <div class="divider"></div>
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--white-30);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px">Check Any User History</div>
-          <div style="display:flex;gap:10px">
-            <input class="field-input" id="history-id-quick" type="number" placeholder="Passenger ID" style="flex:1" />
-            <button class="btn btn-ghost btn-sm" onclick="fetchHistoryQuick()">Fetch</button>
-          </div>
-          <div id="alert-history-quick" class="alert"></div>
         </div>
+        <div class="input-row">
+          <div class="field">
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Vehicle Type
+            </label>
+            <input type="text" id="dVehicle" placeholder="e.g. Sedan, Auto" />
+          </div>
+          <div class="field">
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.26 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.17 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.1a16 16 0 0 0 6 6l.45-.45a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              Phone Number
+            </label>
+            <input type="text" id="dPhone" placeholder="+91 98000 00000" />
+          </div>
+        </div>
+        <button class="btn btn-green" id="btnRegDriver" onclick="registerDriver()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Onboard Driver
+        </button>
+        <div class="feedback" id="fbRegDriver"></div>
+      </div>
+
+      <!-- Active Duty -->
+      <div class="card driver-card">
+        <div class="card-title green">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Active Duty Management
+        </div>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Booking ID
+          </label>
+          <input type="number" id="crBookingId" placeholder="e.g. 7" />
+        </div>
+        <div class="field">
+          <label>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Driver ID
+          </label>
+          <input type="number" id="crDriverId" placeholder="e.g. 2" />
+        </div>
+        <button class="btn btn-red" id="btnComplete" onclick="completeRide()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Mark Ride Complete
+        </button>
+        <div class="feedback" id="fbComplete"></div>
+      </div>
+
+    </div><!-- end right col -->
+  </div>
+
+  <!-- ── LEDGER ── -->
+  <div class="ledger-section">
+    <div class="ledger-header">
+      <div class="ledger-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Live Ledger &amp; History Explorer
+      </div>
+      <div class="ledger-search">
+        <input type="number" id="histPassId" placeholder="Passenger ID…" onkeydown="if(event.key==='Enter') fetchHistory()" />
+        <button class="btn btn-ghost" id="btnHistory" onclick="fetchHistory()" style="width:auto;margin-top:0;padding:8px 18px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </button>
+      </div>
+    </div>
+    <div id="historyContainer">
+      <div class="empty-state">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Enter a Passenger ID above to load ride history
       </div>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       TAB 2 — DRIVER REGISTRATION
-  ══════════════════════════════════════ -->
-  <div class="page" id="tab-driver">
-    <div class="glass-card">
-      <div class="card-header">
-        <div class="card-icon amber">🚖</div>
-        <div class="card-title-group">
-          <div class="card-title">Register a Driver</div>
-          <div class="card-subtitle">POST /drivers</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <form id="form-driver" onsubmit="handleRegisterDriver(event)">
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Full Name</label>
-              <input class="field-input" id="d-name" type="text" placeholder="e.g. Rajan Kumar" required />
-            </div>
-            <div class="field">
-              <label class="field-label">License Number</label>
-              <input class="field-input" id="d-license" type="text" placeholder="MP09-2022-XXXXXX" required />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Phone Number</label>
-              <input class="field-input" id="d-phone" type="tel" placeholder="+91 98765 XXXXX" required />
-            </div>
-            <div class="field">
-              <label class="field-label">Vehicle Type</label>
-              <select class="field-input" id="d-vehicle" required>
-                <option value="">Select vehicle type</option>
-                <option>Sedan</option>
-                <option>SUV</option>
-                <option>Hatchback</option>
-                <option>Auto Rickshaw</option>
-                <option>Cab</option>
-              </select>
-            </div>
-          </div>
-          <div id="alert-driver" class="alert"></div>
-          <button type="submit" class="btn btn-teal btn-full" id="btn-driver">
-            <span>Register Driver</span> <span>→</span>
-          </button>
-        </form>
-
-        <!-- Success result -->
-        <div id="driver-result" style="display:none;margin-top:16px">
-          <div style="background:var(--green-dim);border:1px solid rgba(46,204,143,0.25);border-radius:var(--r-md);padding:16px 20px;display:flex;align-items:center;gap:14px">
-            <span style="font-size:22px">✅</span>
-            <div>
-              <div style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--green)">Driver Registered!</div>
-              <div style="font-family:var(--font-mono);font-size:12px;color:var(--white-30);margin-top:3px">DRIVER_ID: <span id="driver-result-id" style="color:var(--amber)">—</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════
-       TAB 3 — BOOK RIDE
-  ══════════════════════════════════════ -->
-  <div class="page" id="tab-book">
-
-    <!-- Not logged in warning -->
-    <div id="book-noauth" class="alert info visible" style="margin-bottom:20px">
-      <span class="alert-icon">ℹ️</span>
-      <span>Sign in or create a passenger account first to book a ride. Go to the <strong>Onboard</strong> tab.</span>
-    </div>
-
-    <div class="two-col">
-      <!-- Booking Form -->
-      <div class="glass-card">
-        <div class="card-header">
-          <div class="card-icon teal">📍</div>
-          <div class="card-title-group">
-            <div class="card-title">Auto-Match Ride</div>
-            <div class="card-subtitle">POST /bookings/auto-match</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <form id="form-book" onsubmit="handleAutoMatch(event)">
-            <div class="field">
-              <label class="field-label">Passenger ID</label>
-              <input class="field-input" id="b-passenger" type="number" placeholder="Auto-filled on sign in" required />
-            </div>
-            <div class="field">
-              <label class="field-label">Pickup Address</label>
-              <input class="field-input" id="b-pickup" type="text" placeholder="e.g. Arera Colony, Bhopal" required />
-            </div>
-            <div class="field">
-              <label class="field-label">Dropoff Address</label>
-              <input class="field-input" id="b-dropoff" type="text" placeholder="e.g. DB Mall, MP Nagar" required />
-            </div>
-            <div class="field">
-              <label class="field-label">Fare (₹)</label>
-              <input class="field-input" id="b-fare" type="number" placeholder="e.g. 180" min="1" required />
-            </div>
-            <div id="alert-book" class="alert"></div>
-            <button type="submit" class="btn btn-teal btn-full" id="btn-book">
-              <span>🔍 Find Match</span>
-            </button>
-          </form>
-
-          <!-- Loading state -->
-          <div class="loading-state" id="book-loading">
-            <div class="loader-ring"></div>
-            <div class="loader-text">
-              Searching cloud database for<br/>closest available driver<span class="loader-dots"></span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Trip Status -->
-      <div>
-        <div class="glass-card" style="margin-bottom:20px">
-          <div class="card-header">
-            <div class="card-icon green">📡</div>
-            <div class="card-title-group">
-              <div class="card-title">Trip Status</div>
-              <div class="card-subtitle">Active ride tracking</div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div id="trip-idle" style="text-align:center;padding:28px 0;font-family:var(--font-mono);font-size:12px;color:var(--white-30)">
-              No active trip.<br/>Book a ride to start tracking.
-            </div>
-            <!-- Trip card -->
-            <div class="trip-card" id="trip-card">
-              <div class="trip-card-header">
-                <div class="trip-live-dot"></div>
-                <span class="trip-live-label">Trip Active</span>
-                <span class="trip-booking-id" id="tc-booking-id">BOOKING #—</span>
-              </div>
-              <div class="trip-body">
-                <div class="trip-grid">
-                  <div>
-                    <div class="trip-field-label">Driver</div>
-                    <div class="trip-field-val" id="tc-driver">—</div>
-                  </div>
-                  <div>
-                    <div class="trip-field-label">Driver ID</div>
-                    <div class="trip-field-val" id="tc-driver-id" style="color:var(--teal)">—</div>
-                  </div>
-                </div>
-                <div class="trip-route">
-                  <div class="route-col">
-                    <div class="route-item">
-                      <div class="route-dot pickup"></div>
-                      <span class="route-addr" id="tc-pickup">—</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:10px;padding-left:1px">
-                      <div style="width:1px;height:18px;background:var(--white-12);margin-left:4px"></div>
-                    </div>
-                    <div class="route-item">
-                      <div class="route-dot drop"></div>
-                      <span class="route-addr" id="tc-dropoff">—</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="fare-badge" id="tc-fare">₹ —</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Complete ride -->
-        <div id="complete-panel" style="display:none">
-          <div class="glass-card">
-            <div class="card-header">
-              <div class="card-icon red">🏁</div>
-              <div class="card-title-group">
-                <div class="card-title">Complete Ride</div>
-                <div class="card-subtitle">PATCH /bookings/{id}/complete</div>
-              </div>
-            </div>
-            <div class="card-body">
-              <p style="font-size:13px;color:var(--white-30);margin-bottom:16px;line-height:1.7">Mark the current trip as completed. This frees the driver for new bookings.</p>
-              <div class="field">
-                <label class="field-label">Booking ID</label>
-                <input class="field-input" id="c-booking-id" type="number" placeholder="Auto-filled" readonly style="opacity:0.6" />
-              </div>
-              <div class="field">
-                <label class="field-label">Driver ID</label>
-                <input class="field-input" id="c-driver-id" type="number" placeholder="Auto-filled" readonly style="opacity:0.6" />
-              </div>
-              <div id="alert-complete" class="alert"></div>
-              <button class="btn btn-red btn-full" onclick="handleCompleteRide()">
-                <span>🏁 Complete Ride</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════
-       TAB 4 — HISTORY
-  ══════════════════════════════════════ -->
-  <div class="page" id="tab-history">
-    <div class="glass-card">
-      <div class="card-header">
-        <div class="card-icon teal">🕘</div>
-        <div class="card-title-group">
-          <div class="card-title">Ride History</div>
-          <div class="card-subtitle">GET /users/{user_id}/history</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div style="display:flex;gap:12px;margin-bottom:24px;align-items:flex-end">
-          <div class="field" style="flex:1;margin-bottom:0">
-            <label class="field-label">Passenger ID</label>
-            <input class="field-input" id="history-uid" type="number" placeholder="Enter passenger ID" />
-          </div>
-          <button class="btn btn-teal btn-sm" onclick="fetchHistory()" id="btn-history" style="margin-bottom:0;height:44px">
-            Fetch History
-          </button>
-        </div>
-
-        <div id="alert-history" class="alert"></div>
-
-        <!-- Stats strip -->
-        <div class="stat-strip" id="history-stats" style="display:none">
-          <div class="stat-tile">
-            <div class="stat-tile-val" id="hs-total">0</div>
-            <div class="stat-tile-label">Total Rides</div>
-          </div>
-          <div class="stat-tile">
-            <div class="stat-tile-val" id="hs-spent" style="color:var(--amber)">₹0</div>
-            <div class="stat-tile-label">Total Spent</div>
-          </div>
-          <div class="stat-tile">
-            <div class="stat-tile-val" id="hs-completed" style="color:var(--green)">0</div>
-            <div class="stat-tile-label">Completed</div>
-          </div>
-        </div>
-
-        <div id="history-list">
-          <div class="history-empty">Enter a Passenger ID above and click Fetch History.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /app-shell -->
-
-<!-- Toast container -->
-<div class="toast-wrap" id="toasts"></div>
+</div><!-- end wrapper -->
 
 <script>
-// ── CONFIG ──
-const API = 'https://metroride-0whu.onrender.com';
+const BASE = 'http://127.0.0.1:8000';
 
-// ── APP STATE ──
-const state = {
-  passenger_id: null,
-  passenger_name: null,
-  active_booking_id: null,
-  active_driver_id: null,
-  active_pickup: null,
-  active_dropoff: null,
-  active_fare: null,
-};
-
-// Restore from localStorage
-(function init() {
-  const saved = localStorage.getItem('metroride_session');
-  if (saved) {
-    const s = JSON.parse(saved);
-    Object.assign(state, s);
-    if (state.passenger_id) updateSessionUI();
-    if (state.active_booking_id) restoreTripCard();
-  }
-})();
-
-function saveState() {
-  localStorage.setItem('metroride_session', JSON.stringify(state));
-}
-
-// ── NAV ──
-function showTab(name, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  el.classList.add('active');
-}
-
-// ── SESSION ──
-function updateSessionUI() {
-  const banner = document.getElementById('session-banner');
-  banner.classList.add('visible');
-  document.getElementById('session-name').textContent = state.passenger_name || 'Passenger';
-  document.getElementById('session-id-label').textContent = `PASSENGER_ID: ${state.passenger_id}`;
-  const initials = (state.passenger_name || 'P').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('session-avatar').textContent = initials;
-  // Fill booking form
-  document.getElementById('b-passenger').value = state.passenger_id;
-  // Hide no-auth warning
-  document.getElementById('book-noauth').classList.remove('visible');
-}
-
-function logOut() {
-  Object.assign(state, { passenger_id:null, passenger_name:null, active_booking_id:null, active_driver_id:null, active_pickup:null, active_dropoff:null, active_fare:null });
-  saveState();
-  document.getElementById('session-banner').classList.remove('visible');
-  document.getElementById('book-noauth').classList.add('visible');
-  document.getElementById('b-passenger').value = '';
-  hideTripCard();
-  toast('Signed out', 'amber');
-}
-
-function quickLogin() {
-  const id = document.getElementById('login-id').value.trim();
-  const name = document.getElementById('login-name').value.trim() || 'Passenger';
-  if (!id) { toast('Enter a Passenger ID to sign in', 'red'); return; }
-  state.passenger_id = parseInt(id);
-  state.passenger_name = name;
-  saveState();
-  updateSessionUI();
-  toast(`Signed in as ${name} (ID: ${id})`, 'teal');
-}
-
-// ── HELPERS ──
-function setAlert(id, type, msg) {
+function setFeedback(id, type, html) {
   const el = document.getElementById(id);
-  el.className = `alert ${type} visible`;
-  el.innerHTML = `<span class="alert-icon">${type==='error'?'⚠️':type==='success'?'✅':'ℹ️'}</span><span>${msg}</span>`;
+  el.className = `feedback show ${type}`;
+  el.innerHTML = html;
 }
-function clearAlert(id) {
+function clearFeedback(id) {
   const el = document.getElementById(id);
-  el.className = 'alert';
-  el.innerHTML = '';
+  el.className = 'feedback'; el.innerHTML = '';
 }
-function setLoading(btnId, loading, label='') {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  btn.disabled = loading;
-  if (loading) btn.innerHTML = `<span style="opacity:0.6">Processing…</span>`;
-  else btn.innerHTML = label;
+function setBtnLoading(id, loading) {
+  const btn = document.getElementById(id);
+  if (loading) { btn._orig = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span> Processing…`; btn.disabled = true; }
+  else { btn.innerHTML = btn._orig || btn.innerHTML; btn.disabled = false; }
 }
-function toast(msg, color='teal') {
-  const wrap = document.getElementById('toasts');
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = `<div class="toast-dot ${color}"></div><span>${msg}</span>`;
-  wrap.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.4s'; setTimeout(()=>t.remove(),400); }, 3500);
-}
-
-// ── API WRAPPER ──
-async function apiPost(path, body) {
-  const res = await fetch(API + path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || `Error ${res.status}`);
-  return data;
-}
-async function apiPatch(path, body) {
-  const res = await fetch(API + path, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || `Error ${res.status}`);
-  return data;
-}
-async function apiGet(path) {
-  const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json' } });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || `Error ${res.status}`);
+async function apiFetch(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(BASE + path, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) { const msg = data?.detail || `HTTP ${res.status}`; throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg)); }
   return data;
 }
 
-// ── CREATE USER ──
-async function handleCreateUser(e) {
-  e.preventDefault();
-  clearAlert('alert-user');
-  const name = document.getElementById('u-name').value.trim();
-  const email = document.getElementById('u-email').value.trim();
-  setLoading('btn-user', true);
+async function checkBackend() {
+  const dot = document.getElementById('statusDot');
+  const lbl = document.getElementById('statusLabel');
   try {
-    const data = await apiPost('/users', { name, email });
-    const uid = data.user_id;
-    state.passenger_id = uid;
-    state.passenger_name = name;
-    saveState();
-    updateSessionUI();
-    setAlert('alert-user', 'success', `Account created! Your Passenger ID is <strong style="color:var(--teal)">${uid}</strong> — saved to your session.`);
-    toast(`Welcome, ${name}! ID: ${uid}`, 'teal');
-    document.getElementById('form-user').reset();
-  } catch(err) {
-    setAlert('alert-user', 'error', err.message);
-    toast(err.message, 'red');
+    await fetch(BASE + '/', { signal: AbortSignal.timeout(3000) });
+    dot.className = 'status-dot online'; lbl.textContent = 'BACKEND ONLINE';
+  } catch {
+    dot.className = 'status-dot offline'; lbl.textContent = 'BACKEND OFFLINE';
   }
-  setLoading('btn-user', false, '<span>Create Account</span> <span>→</span>');
 }
+checkBackend();
+setInterval(checkBackend, 15000);
 
-// ── REGISTER DRIVER ──
-async function handleRegisterDriver(e) {
-  e.preventDefault();
-  clearAlert('alert-driver');
-  document.getElementById('driver-result').style.display = 'none';
-  const name = document.getElementById('d-name').value.trim();
-  const license_number = document.getElementById('d-license').value.trim();
-  const phone_number = document.getElementById('d-phone').value.trim();
-  const vehicle_type = document.getElementById('d-vehicle').value;
-  setLoading('btn-driver', true);
+async function createUser() {
+  clearFeedback('fbCreateUser');
+  const name = document.getElementById('pName').value.trim();
+  const email = document.getElementById('pEmail').value.trim();
+  if (!name || !email) return setFeedback('fbCreateUser', 'error', 'Name and email are required.');
+  setBtnLoading('btnCreateUser', true);
   try {
-    const data = await apiPost('/drivers', { name, license_number, vehicle_type, phone_number });
-    const did = data.driver_id;
-    document.getElementById('driver-result').style.display = 'block';
-    document.getElementById('driver-result-id').textContent = did;
-    toast(`Driver "${name}" registered! ID: ${did}`, 'teal');
-    document.getElementById('form-driver').reset();
-  } catch(err) {
-    setAlert('alert-driver', 'error', err.message);
-    toast(err.message, 'red');
-  }
-  setLoading('btn-driver', false, '<span>Register Driver</span> <span>→</span>');
+    const d = await apiFetch('POST', '/users', { name, email });
+    document.getElementById('statPassengers').textContent = d.user_id;
+    setFeedback('fbCreateUser', 'success',
+      `<span class="fb-key">Account created successfully</span>
+       <span class="fb-key">User ID</span><span class="fb-val">#${d.user_id}</span>`);
+    document.getElementById('pName').value = '';
+    document.getElementById('pEmail').value = '';
+  } catch(e) { setFeedback('fbCreateUser', 'error', e.message); }
+  setBtnLoading('btnCreateUser', false);
 }
 
-// ── AUTO-MATCH RIDE ──
-async function handleAutoMatch(e) {
-  e.preventDefault();
-  clearAlert('alert-book');
-  const passenger_id = parseInt(document.getElementById('b-passenger').value);
-  const pickup_address = document.getElementById('b-pickup').value.trim();
-  const dropoff_address = document.getElementById('b-dropoff').value.trim();
-  const fare = parseFloat(document.getElementById('b-fare').value);
-
-  // Show loading, hide form
-  document.getElementById('form-book').style.display = 'none';
-  document.getElementById('book-loading').classList.add('visible');
-
+async function registerDriver() {
+  clearFeedback('fbRegDriver');
+  const name = document.getElementById('dName').value.trim();
+  const license_number = document.getElementById('dLicense').value.trim();
+  const vehicle_type = document.getElementById('dVehicle').value.trim();
+  const phone_number = document.getElementById('dPhone').value.trim();
+  if (!name || !license_number || !vehicle_type || !phone_number)
+    return setFeedback('fbRegDriver', 'error', 'All driver fields are required.');
+  setBtnLoading('btnRegDriver', true);
   try {
-    const data = await apiPost('/bookings/auto-match', { passenger_id, pickup_address, dropoff_address, fare });
-    const booking_id = data.booking_id;
-    const driver_id = data.assigned_driver_id;
-
-    // Save to state
-    state.active_booking_id = booking_id;
-    state.active_driver_id = driver_id;
-    state.active_pickup = pickup_address;
-    state.active_dropoff = dropoff_address;
-    state.active_fare = fare;
-    saveState();
-
-    // Show trip card
-    showTripCard({ booking_id, driver_id, pickup_address, dropoff_address, fare, driver_name: `Driver #${driver_id}` });
-    toast(`Driver #${driver_id} dispatched! Booking #${booking_id}`, 'teal');
-    document.getElementById('form-book').reset();
-    document.getElementById('b-passenger').value = state.passenger_id || '';
-  } catch(err) {
-    clearAlert('alert-book');
-    setAlert('alert-book', 'error', err.message);
-    toast(err.message, 'red');
-  }
-
-  document.getElementById('book-loading').classList.remove('visible');
-  document.getElementById('form-book').style.display = 'block';
+    const d = await apiFetch('POST', '/drivers', { name, license_number, vehicle_type, phone_number });
+    document.getElementById('statDrivers').textContent = d.driver_id;
+    setFeedback('fbRegDriver', 'success',
+      `<span class="fb-key">Driver registered successfully</span>
+       <span class="fb-key">Driver ID</span><span class="fb-val">#${d.driver_id}</span>`);
+    ['dName','dLicense','dVehicle','dPhone'].forEach(id => document.getElementById(id).value = '');
+  } catch(e) { setFeedback('fbRegDriver', 'error', e.message); }
+  setBtnLoading('btnRegDriver', false);
 }
 
-function showTripCard({ booking_id, driver_id, pickup_address, dropoff_address, fare, driver_name }) {
-  document.getElementById('trip-idle').style.display = 'none';
-  const card = document.getElementById('trip-card');
-  card.classList.add('visible');
-  document.getElementById('tc-booking-id').textContent = `BOOKING #${booking_id}`;
-  document.getElementById('tc-driver').textContent = driver_name || `Driver #${driver_id}`;
-  document.getElementById('tc-driver-id').textContent = `#${driver_id}`;
-  document.getElementById('tc-pickup').textContent = pickup_address;
-  document.getElementById('tc-dropoff').textContent = dropoff_address;
-  document.getElementById('tc-fare').textContent = `₹ ${fare}`;
-  // Show complete panel
-  document.getElementById('complete-panel').style.display = 'block';
-  document.getElementById('c-booking-id').value = booking_id;
-  document.getElementById('c-driver-id').value = driver_id;
-}
-
-function hideTripCard() {
-  document.getElementById('trip-idle').style.display = 'block';
-  document.getElementById('trip-card').classList.remove('visible');
-  document.getElementById('complete-panel').style.display = 'none';
-}
-
-function restoreTripCard() {
-  if (state.active_booking_id) {
-    showTripCard({
-      booking_id: state.active_booking_id,
-      driver_id: state.active_driver_id,
-      pickup_address: state.active_pickup,
-      dropoff_address: state.active_dropoff,
-      fare: state.active_fare,
-    });
-  }
-}
-
-// ── COMPLETE RIDE ──
-async function handleCompleteRide() {
-  clearAlert('alert-complete');
-  const booking_id = parseInt(document.getElementById('c-booking-id').value);
-  const driver_id = parseInt(document.getElementById('c-driver-id').value);
-  if (!booking_id || !driver_id) { setAlert('alert-complete','error','Booking ID and Driver ID required.'); return; }
+async function autoMatch() {
+  clearFeedback('fbAutoMatch');
+  document.getElementById('liveTicket').classList.remove('show');
+  const passenger_id = parseInt(document.getElementById('bmPassId').value);
+  const pickup_address = document.getElementById('bmPickup').value.trim();
+  const dropoff_address = document.getElementById('bmDropoff').value.trim();
+  const fare = parseFloat(document.getElementById('bmFare').value);
+  if (!passenger_id || !pickup_address || !dropoff_address || isNaN(fare))
+    return setFeedback('fbAutoMatch', 'error', 'All booking fields are required.');
+  setBtnLoading('btnAutoMatch', true);
   try {
-    const data = await apiPatch(`/bookings/${booking_id}/complete`, { driver_id });
-    toast(`Ride #${booking_id} completed! Driver #${driver_id} is free.`, 'teal');
-    // Clear active trip
-    state.active_booking_id = null;
-    state.active_driver_id = null;
-    state.active_pickup = null;
-    state.active_dropoff = null;
-    state.active_fare = null;
-    saveState();
-    hideTripCard();
-  } catch(err) {
-    setAlert('alert-complete', 'error', err.message);
-    toast(err.message, 'red');
-  }
+    const d = await apiFetch('POST', '/bookings/auto-match', { passenger_id, pickup_address, dropoff_address, fare });
+    document.getElementById('tkBookingId').textContent = `#${d.booking_id}`;
+    document.getElementById('tkDriverId').textContent  = `#${d.assigned_driver_id}`;
+    document.getElementById('tkRoute').textContent     = `${pickup_address} → ${dropoff_address}`;
+    document.getElementById('tkFare').textContent      = `₹${fare.toFixed(2)}`;
+    document.getElementById('liveTicket').classList.add('show');
+    document.getElementById('statLastBooking').textContent = `#${d.booking_id}`;
+    setFeedback('fbAutoMatch', 'success', `Driver #${d.assigned_driver_id} dispatched. Booking #${d.booking_id} confirmed.`);
+    document.getElementById('crBookingId').value = d.booking_id;
+    document.getElementById('crDriverId').value  = d.assigned_driver_id;
+  } catch(e) { setFeedback('fbAutoMatch', 'error', e.message); }
+  setBtnLoading('btnAutoMatch', false);
 }
 
-// ── RIDE HISTORY ──
+async function completeRide() {
+  clearFeedback('fbComplete');
+  const booking_id = parseInt(document.getElementById('crBookingId').value);
+  const driver_id  = parseInt(document.getElementById('crDriverId').value);
+  if (!booking_id || !driver_id) return setFeedback('fbComplete', 'error', 'Booking ID and Driver ID are required.');
+  setBtnLoading('btnComplete', true);
+  try {
+    const d = await apiFetch('PATCH', `/bookings/${booking_id}/complete`, { driver_id });
+    setFeedback('fbComplete', 'success', d.message || `Ride #${booking_id} marked complete.`);
+    document.getElementById('liveTicket').classList.remove('show');
+    document.getElementById('crBookingId').value = '';
+    document.getElementById('crDriverId').value  = '';
+  } catch(e) { setFeedback('fbComplete', 'error', e.message); }
+  setBtnLoading('btnComplete', false);
+}
+
 async function fetchHistory() {
-  clearAlert('alert-history');
-  const uid = document.getElementById('history-uid').value.trim();
-  if (!uid) { setAlert('alert-history','error','Enter a Passenger ID.'); return; }
-  setLoading('btn-history', true);
-  document.getElementById('history-stats').style.display = 'none';
-  document.getElementById('history-list').innerHTML = `<div class="history-empty"><div class="loader-ring" style="width:32px;height:32px;margin:0 auto 12px"></div>Loading history…</div>`;
+  const uid = parseInt(document.getElementById('histPassId').value);
+  const container = document.getElementById('historyContainer');
+  if (!uid) { container.innerHTML = `<div class="empty-state">Enter a valid Passenger ID.</div>`; return; }
+  const btn = document.getElementById('btnHistory');
+  btn._orig = btn.innerHTML;
+  btn.innerHTML = `<span class="spinner"></span>`;
+  btn.disabled = true;
   try {
-    const data = await apiGet(`/users/${uid}/history`);
-    renderHistory(data);
-  } catch(err) {
-    setAlert('alert-history','error', err.message);
-    document.getElementById('history-list').innerHTML = `<div class="history-empty">Failed to load history.</div>`;
-    toast(err.message, 'red');
+    const d = await apiFetch('GET', `/users/${uid}/history`);
+    const rows = d.history || [];
+    container.innerHTML = rows.length ? buildTable(rows) :
+      `<div class="empty-state">No ride history found for Passenger #${uid}.</div>`;
+  } catch(e) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--red)">${e.message}</div>`;
   }
-  setLoading('btn-history', false, 'Fetch History');
+  btn.innerHTML = btn._orig; btn.disabled = false;
 }
 
-async function fetchHistoryQuick() {
-  clearAlert('alert-history-quick');
-  const uid = document.getElementById('history-id-quick').value.trim();
-  if (!uid) { setAlert('alert-history-quick','error','Enter an ID.'); return; }
-  try {
-    const data = await apiGet(`/users/${uid}/history`);
-    // Switch to history tab and show
-    showTab('history', document.querySelectorAll('.nav-tab')[3]);
-    document.getElementById('history-uid').value = uid;
-    renderHistory(data);
-    toast(`Loaded ${data.total_rides} rides for ID ${uid}`, 'teal');
-  } catch(err) {
-    setAlert('alert-history-quick','error', err.message);
-    toast(err.message, 'red');
-  }
-}
-
-function renderHistory(data) {
-  const list = document.getElementById('history-list');
-  const rides = data.history || [];
-  const total = data.total_rides || rides.length;
-
-  if (!rides.length) {
-    list.innerHTML = `<div class="history-empty">No rides found for this passenger.</div>`;
-    document.getElementById('history-stats').style.display = 'none';
-    return;
-  }
-
-  // Stats
-  const totalSpent = rides.reduce((s, r) => s + (parseFloat(r.fare) || 0), 0);
-  const completed = rides.filter(r => (r.status||'').toLowerCase() === 'completed').length;
-  document.getElementById('hs-total').textContent = total;
-  document.getElementById('hs-spent').textContent = `₹${totalSpent.toLocaleString('en-IN')}`;
-  document.getElementById('hs-completed').textContent = completed;
-  document.getElementById('history-stats').style.display = 'grid';
-
-  const statusColor = { completed:'#2ECC8F', ongoing:'#00E5BE', pending:'#F5A623', cancelled:'#FF4D6A' };
-
-  list.innerHTML = rides.map((r, i) => {
-    const status = (r.status || 'unknown').toLowerCase();
-    const dotColor = statusColor[status] || '#888';
-    const fare = r.fare ? `₹${parseFloat(r.fare).toLocaleString('en-IN')}` : '—';
-    const from = r.pickup_address || r.pickup || '—';
-    const to = r.dropoff_address || r.dropoff || '—';
-    const bid = r.booking_id || r.id || '—';
-    const did = r.driver_id || '—';
-    return `
-    <div class="history-row" style="animation-delay:${i*0.05}s">
-      <div class="h-index">${i+1}</div>
-      <div class="h-dot" style="background:${dotColor};box-shadow:0 0 6px ${dotColor}40"></div>
-      <div class="h-body">
-        <div class="h-route">
-          <span>${from}</span>
-          <span class="h-route-arrow">→</span>
-          <span>${to}</span>
-        </div>
-        <div class="h-meta">
-          <span>BOOKING #${bid}</span>
-          <span>DRIVER #${did}</span>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        <div class="h-fare" style="color:var(--amber)">${fare}</div>
-        <span class="h-status ${status}">${status.toUpperCase()}</span>
-      </div>
-    </div>`;
-  }).join('');
+function buildTable(rows) {
+  const chipClass = s => {
+    if (!s) return 'chip-ongoing';
+    const sl = s.toLowerCase();
+    if (sl.includes('complet')) return 'chip-completed';
+    if (sl.includes('cancel'))  return 'chip-cancelled';
+    return 'chip-ongoing';
+  };
+  const thead = `<thead><tr>
+    <th>Booking ID</th><th>Driver ID</th><th>Vehicle</th>
+    <th>Pickup</th><th>Dropoff</th><th>Fare</th><th>Status</th>
+  </tr></thead>`;
+  const tbody = rows.map(r => `<tr>
+    <td class="id-cell">#${r.booking_id ?? r.id ?? '—'}</td>
+    <td class="id-cell">${r.driver_id ? '#' + r.driver_id : '—'}</td>
+    <td>${r.vehicle_type ?? r.vehicle ?? '—'}</td>
+    <td>${r.pickup_address ?? r.pickup ?? '—'}</td>
+    <td>${r.dropoff_address ?? r.dropoff ?? '—'}</td>
+    <td class="fare-cell">₹${r.fare != null ? Number(r.fare).toFixed(2) : '—'}</td>
+    <td><span class="status-chip ${chipClass(r.status)}">${r.status ?? 'ongoing'}</span></td>
+  </tr>`).join('');
+  return `<div class="table-wrap"><table>${thead}<tbody>${tbody}</tbody></table></div>`;
 }
 </script>
 </body>
